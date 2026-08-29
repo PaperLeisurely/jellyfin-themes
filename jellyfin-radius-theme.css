@@ -1,0 +1,457 @@
+/* ==========================================================================
+   Jellyfin · shadcn/ui 圆角标准主题
+   --------------------------------------------------------------------------
+   本主题只做一件事：参考 shadcn/ui（https://github.com/shadcn-ui/ui）
+   的圆角标准，为 Jellyfin 10.11.x 所有界面元素添加统一圆角。
+   - 不改任何颜色 / 布局 / 动效（保持 Jellyfin 默认）
+   - 不写 Media Bar / 弹幕插件等避让规则
+   - 深浅色模式通用（圆角与颜色无关，自动适配任何主题）
+   --------------------------------------------------------------------------
+   shadcn/ui 圆角规范：
+   --radius: 0.5rem（8px）为基准
+   按钮 / 输入框 / 小控件  → calc(var(--radius) - 2px)   ≈ 6px
+   卡片 / 列表项 / 缩略图  → var(--radius)               = 8px
+   弹窗 / 抽屉 / 大容器    → calc(var(--radius) + 4px)   ≈ 12px
+   圆形元素（Fab/头像/thumb）→ 9999px（胶囊）
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 圆角令牌（shadcn 标准）
+   ========================================================================== */
+:root {
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-pill: 9999px;
+}
+
+/* ==========================================================================
+   2. 卡片（海报 / 剧集 / 相册缩略图）
+   --------------------------------------------------------------------------
+   注意：图片由懒加载器以行内 background-image 设在本元素上，
+   用 border-radius + overflow:hidden 裁出圆角，不覆盖行内背景图。
+   ========================================================================== */
+.cardScalable {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.cardBox {
+  border-radius: var(--radius-lg);
+}
+
+.cardImageContainer,
+.chapterCardImageContainer {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.cardImage {
+  border-radius: var(--radius-lg);
+}
+
+.cardPadder {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.cardContent {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* 各类形状的占位底 */
+.cardPadder-portrait,
+.cardPadder-overflowPortrait,
+.cardPadder-square,
+.cardPadder-overflowSquare,
+.cardPadder-banner,
+.cardPadder-backdrop,
+.cardPadder-overflowBackdrop,
+.cardPadder-mixedBackdrop,
+.cardPadder-overflowSmallBackdrop,
+.cardPadder-smallBackdrop {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* 剧集列表缩略图 */
+.listItemImage {
+  border-radius: var(--radius-lg);
+}
+
+.listItemImage-large {
+  border-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   3. 按钮
+   --------------------------------------------------------------------------
+   shadcn：普通按钮/主按钮/描边按钮 6px；圆形图标按钮保持圆形（胶囊）。
+   ========================================================================== */
+.emby-button {
+  border-radius: var(--radius-sm);
+}
+
+.emby-button.raised,
+.emby-button.raised.primary,
+.btn-primary,
+.button-submit,
+.btnSubmit {
+  border-radius: var(--radius-sm);
+}
+
+.emby-button.outline,
+.emby-button[data-variant='outline'] {
+  border-radius: var(--radius-sm);
+}
+
+.emby-button.accent {
+  border-radius: var(--radius-sm);
+}
+
+/* 文字按钮 / 链接按钮：圆角用于 hover 底色 */
+.button-link,
+.button-flat,
+.textActionButton {
+  border-radius: var(--radius-sm);
+}
+
+/* 圆形图标按钮（保持圆形） */
+.paper-icon-button-light,
+.headerButton,
+.cardOverlayFab,
+.listItemImageButton {
+  border-radius: var(--radius-pill);
+}
+
+/* 悬停播放按钮（Fab）保持圆形 */
+.cardOverlayFab-primary {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   4. 输入框 / 下拉 / 文本域
+   --------------------------------------------------------------------------
+   shadcn：输入框 6px，聚焦时圆角不变。
+   ========================================================================== */
+.emby-input,
+.emby-textarea,
+.inputContainer input {
+  border-radius: var(--radius-sm);
+}
+
+.emby-select,
+.selectContainer select,
+.emby-select-withcolor {
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   5. 对话框 / 弹窗 / 操作菜单
+   --------------------------------------------------------------------------
+   shadcn：弹窗 12px。
+   ========================================================================== */
+.dialog,
+.dialog.animated-dialog,
+.formDialog {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.dialog-backdrop,
+.formDialogHeader,
+.formDialogFooter {
+  border-radius: var(--radius-xl);
+}
+
+/* 操作菜单 / 下拉菜单 */
+.paper-list-container,
+.actionSheetContent,
+.actionsheet {
+  border-radius: var(--radius-lg);
+}
+
+/* MUI 弹窗 */
+.MuiDialog-paper {
+  border-radius: var(--radius-xl) !important;
+}
+
+.MuiMenu-paper {
+  border-radius: var(--radius-lg) !important;
+}
+
+.MuiPaper-rounded {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ==========================================================================
+   6. 列表项
+   --------------------------------------------------------------------------
+   shadcn：列表项 8px（hover 底色圆角）。
+   ========================================================================== */
+.listItem {
+  border-radius: var(--radius-lg);
+}
+
+.listItem:hover,
+.listItem:focus {
+  border-radius: var(--radius-lg);
+}
+
+.listItem-content {
+  border-radius: var(--radius-lg);
+}
+
+.listView .listItem {
+  border-radius: var(--radius-lg);
+}
+
+/* 列表缩略图容器 */
+.listItemImage {
+  border-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   7. 侧边栏 / 抽屉
+   --------------------------------------------------------------------------
+   导航项 8px；抽屉自身保持直角（贴边），内部元素圆角。
+   ========================================================================== */
+#mainDrawer,
+.mainDrawer {
+  border-radius: 0;
+}
+
+.navMenuOption {
+  border-radius: var(--radius-lg);
+}
+
+.sidebarHeader,
+.sidebarFooter {
+  border-radius: 0;
+}
+
+/* MUI 抽屉 */
+.MuiDrawer-paper {
+  border-radius: 0 !important;
+}
+
+/* ==========================================================================
+   8. 顶栏
+   --------------------------------------------------------------------------
+   顶栏保持直角（贴边），内部按钮圆形。
+   ========================================================================== */
+.skinHeader,
+.skinHeader-blurred {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   9. 正在播放栏 / 底部导航
+   --------------------------------------------------------------------------
+   贴边直角，内部元素圆角。
+   ========================================================================== */
+.nowPlayingBar {
+  border-radius: 0;
+}
+
+.appfooter {
+  border-radius: 0;
+}
+
+.nowPlayingBar .playPauseButton,
+.nowPlayingBar .mediaButton {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   10. 播放器 OSD
+   --------------------------------------------------------------------------
+   控制按钮圆形；弹窗 12px；视频画面保持直角（全屏）。
+   ========================================================================== */
+.osdControls .paper-icon-button-light {
+  border-radius: var(--radius-pill);
+}
+
+.videoOsdBottom {
+  border-radius: 0;
+}
+
+.osdSettingsDialog .dialog,
+.playbackSettings .dialog {
+  border-radius: var(--radius-xl);
+}
+
+.videoPlayerContainer {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   11. 徽标 / 标签 / 指示器
+   ========================================================================== */
+.age-rating {
+  border-radius: var(--radius-sm);
+}
+
+.videoIndicator,
+.countIndicator,
+.playedIndicator,
+.mediaSourceIndicator,
+.missingIndicator,
+.unairedIndicator,
+.filterIndicator {
+  border-radius: var(--radius-sm);
+}
+
+/* 分级标签胶囊 */
+.mediaInfoOfficialRating {
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   12. 进度条 / 滑块 / 开关
+   --------------------------------------------------------------------------
+   shadcn：滑块圆点胶囊；轨道 2px；开关胶囊。
+   ========================================================================== */
+.mdl-slider::-webkit-slider-thumb {
+  border-radius: var(--radius-pill);
+}
+
+.mdl-slider::-moz-range-thumb {
+  border-radius: var(--radius-pill);
+}
+
+.mdl-slider-background-flex,
+.mdl-slider-background-lower,
+.mdl-slider-background-upper {
+  border-radius: var(--radius-sm);
+}
+
+.itemProgressBar,
+.itemProgressBarForeground,
+.backgroundProgress,
+.playbackProgress,
+.transcodingProgress {
+  border-radius: var(--radius-sm);
+}
+
+/* MUI 开关 / 滑块 */
+.MuiSwitch-track {
+  border-radius: var(--radius-pill);
+}
+
+.MuiSlider-rail,
+.MuiSlider-track,
+.MuiSlider-thumb {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   13. 复选框 / 单选按钮
+   --------------------------------------------------------------------------
+   复选框 4px（shadcn 方形略圆），单选保持圆形。
+   ========================================================================== */
+.checkboxOutline {
+  border-radius: 4px;
+}
+
+.radioOutline {
+  border-radius: var(--radius-pill);
+}
+
+.mdl-radio__outer-circle,
+.mdl-radio__inner-circle {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   14. 详情页
+   ========================================================================== */
+/* 详情页海报 */
+.detailImageContainer .card,
+.detailImageContainer .cardScalable,
+.detailImageContainer .cardImageContainer {
+  border-radius: var(--radius-xl);
+}
+
+/* 详情页背景图（顶部 banner）——圆角仅在有 overflow 容器时生效，保持直角 */
+.itemBackdrop {
+  border-radius: 0;
+}
+
+/* 详情页 LOGO */
+.detailLogo {
+  border-radius: var(--radius-lg);
+}
+
+/* 影评块 */
+.criticReview {
+  border-radius: var(--radius-lg);
+}
+
+/* 章节预览缩略图 */
+.chapterThumb {
+  border-radius: var(--radius-lg);
+}
+
+.chapterThumbContainer {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   15. 头像
+   --------------------------------------------------------------------------
+   头像保持圆形（Jellyfin 默认，不破坏行内背景图）。
+   ========================================================================== */
+.headerUserImage,
+.headerUserButtonRound div {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   16. 滚动条
+   --------------------------------------------------------------------------
+   细滚动条，thumb 胶囊圆角。
+   ========================================================================== */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: var(--radius-pill);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-pill);
+}
+
+/* ==========================================================================
+   17. 杂项 / 收尾
+   ========================================================================== */
+/* 图片圆角通用兜底（避免某些容器漏掉） */
+img {
+  border-radius: var(--radius-lg);
+}
+
+/* 分组/卡片容器 */
+.paperList,
+.visualCardBox,
+.detailTable {
+  border-radius: var(--radius-lg);
+}
+
+/* 空状态消息 */
+.centerMessage {
+  border-radius: var(--radius-lg);
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
