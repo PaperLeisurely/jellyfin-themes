@@ -1,0 +1,676 @@
+/* ==========================================================================
+   Jellyfin 管理控制台（Dashboard）· shadcn/ui 黑白主题
+   --------------------------------------------------------------------------
+   仅作用于管理控制台界面（body.dashboardDocument，Jellyfin 10.11.x 在
+   控制台入口 AppLayout 给 body 添加该类），不影响主界面/播放器。
+   设计风格与主 shadcn 主题一致：黑白灰 slate 色阶、细边框、0.5rem 圆角、
+   focus ring 光环、150-200ms 过渡。
+   覆盖：MUI 全套（Drawer/Tabs/Table/Switch/Chip/Alert…）、
+   material-react-table 表格、Widget 统计卡片、页面布局、用户菜单等。
+   使用：Jellyfin → 设置 → 高级 → 自定义 CSS，粘贴全部内容。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 设计令牌（与主 shadcn 主题同源）
+   ========================================================================== */
+:root {
+  --dash-bg: #F8FAFC;
+  --dash-bg-grad: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  --dash-surface: #FFFFFF;
+  --dash-surface-2: #F8FAFC;
+  --dash-toolbar: #FFFFFF;
+  --dash-drawer: #FFFFFF;
+  --dash-fg: #0F172A;
+  --dash-fg-2: #475569;
+  --dash-fg-3: #94A3B8;
+  --dash-primary: #0F172A;
+  --dash-primary-hover: #1E293B;
+  --dash-on-primary: #FFFFFF;
+  --dash-border: #E2E8F0;
+  --dash-border-strong: #CBD5E1;
+  --dash-hover: rgba(15, 23, 42, 0.05);
+  --dash-active: rgba(15, 23, 42, 0.09);
+  --dash-selected: rgba(15, 23, 42, 0.08);
+  --dash-ring: #0F172A;
+  --dash-danger: #DC2626;
+  --dash-success: #16A34A;
+  --dash-warning: #D97706;
+  --dash-info: #0284C7;
+  --dash-radius: 0.5rem;
+  --dash-radius-lg: 0.75rem;
+  --dash-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --dash-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  --dash-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.10);
+  --dash-dur: 150ms;
+  --dash-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dash-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dash-bg: #0B1120;
+    --dash-bg-grad: linear-gradient(180deg, #0B1120 0%, #070C18 100%);
+    --dash-surface: #0F172A;
+    --dash-surface-2: #1E293B;
+    --dash-toolbar: #0F172A;
+    --dash-drawer: #0F172A;
+    --dash-fg: #F8FAFC;
+    --dash-fg-2: #94A3B8;
+    --dash-fg-3: #64748B;
+    --dash-primary: #F8FAFC;
+    --dash-primary-hover: #E2E8F0;
+    --dash-on-primary: #0F172A;
+    --dash-border: #1E293B;
+    --dash-border-strong: #334155;
+    --dash-hover: rgba(248, 250, 252, 0.06);
+    --dash-active: rgba(248, 250, 252, 0.10);
+    --dash-selected: rgba(248, 250, 252, 0.10);
+    --dash-ring: #94A3B8;
+    --dash-danger: #EF4444;
+    --dash-success: #4ADE80;
+    --dash-warning: #FBBF24;
+    --dash-info: #38BDF8;
+    --dash-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --dash-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+    --dash-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ==========================================================================
+   2. 控制台作用域基础
+   ========================================================================== */
+body.dashboardDocument {
+  background: var(--dash-bg-grad);
+  background-attachment: fixed;
+  color: var(--dash-fg);
+  font-family: var(--dash-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.dashboardDocument .backgroundContainer,
+body.dashboardDocument #appBackground {
+  background-color: var(--dash-bg) !important;
+}
+
+/* 控制台所有文字基础色 */
+body.dashboardDocument,
+body.dashboardDocument .mainAnimatedPage,
+body.dashboardDocument .content-primary,
+body.dashboardDocument .page {
+  color: var(--dash-fg) !important;
+}
+
+/* ==========================================================================
+   3. MUI 主题变量桥接（控制台是 MUI 应用，变量直接生效）
+   ========================================================================== */
+body.dashboardDocument {
+  /* 文字 */
+  --jf-palette-text-primary: var(--dash-fg);
+  --jf-palette-text-secondary: var(--dash-fg-2);
+  --jf-palette-text-primaryChannel: 15 23 42;
+  --jf-palette-text-secondaryChannel: 71 85 105;
+  /* 背景 */
+  --jf-palette-background-default: var(--dash-bg);
+  --jf-palette-background-paper: var(--dash-surface);
+  --jf-palette-background-defaultChannel: 248 250 252;
+  --jf-palette-background-paperChannel: 255 255 255;
+  /* 主色 */
+  --jf-palette-primary-main: var(--dash-primary);
+  --jf-palette-primary-dark: var(--dash-primary-hover);
+  --jf-palette-primary-contrastText: var(--dash-on-primary);
+  --jf-palette-primary-mainChannel: 15 23 42;
+  /* 次要 */
+  --jf-palette-secondary-main: var(--dash-fg-2);
+  --jf-palette-secondary-contrastText: var(--dash-on-primary);
+  --jf-palette-secondary-mainChannel: 100 116 139;
+  /* 错误/信息/成功/警告 */
+  --jf-palette-error-main: var(--dash-danger);
+  --jf-palette-info-main: var(--dash-info);
+  --jf-palette-success-main: var(--dash-success);
+  --jf-palette-warning-main: var(--dash-warning);
+  --jf-palette-error-contrastText: #FFFFFF;
+  --jf-palette-info-contrastText: #FFFFFF;
+  --jf-palette-success-contrastText: #FFFFFF;
+  --jf-palette-warning-contrastText: #FFFFFF;
+  /* 分隔 / 交互 */
+  --jf-palette-divider: var(--dash-border);
+  --jf-palette-dividerChannel: 15 23 42;
+  --jf-palette-action-hover: var(--dash-hover);
+  --jf-palette-action-focus: var(--dash-active);
+  --jf-palette-action-active: var(--dash-fg);
+  --jf-palette-action-selected: var(--dash-selected);
+  --jf-palette-action-hoverOpacity: 0.05;
+  --jf-palette-action-focusOpacity: 0.09;
+  --jf-palette-action-selectedOpacity: 0.08;
+  /* 顶栏 */
+  --jf-palette-AppBar-defaultBg: var(--dash-toolbar);
+  --jf-palette-AppBar-transparentBg: var(--dash-toolbar);
+  --jf-palette-AppBar-gradient: none;
+  /* 输入 */
+  --jf-palette-FilledInput-bg: var(--dash-surface-2);
+  --jf-palette-FilledInput-borderColor: var(--dash-border);
+  --jf-palette-FilledInput-hoverBg: var(--dash-surface);
+  --jf-palette-FilledInput-disabledBg: var(--dash-surface-2);
+  /* 按钮 */
+  --jf-palette-Button-inheritContainedBg: var(--dash-surface);
+  --jf-palette-Button-inheritContainedHoverBg: var(--dash-surface-2);
+  /* Snackbar / Alert */
+  --jf-palette-SnackbarContent-bg: var(--dash-fg);
+  --jf-palette-SnackbarContent-color: var(--dash-on-primary);
+  --jf-palette-Alert-infoFilledBg: var(--dash-info);
+  --jf-palette-Alert-infoFilledColor: #FFFFFF;
+  /* 通用 */
+  --jf-palette-common-black: #000000;
+  --jf-palette-common-background: var(--dash-bg);
+  --jf-palette-common-onBackground: var(--dash-fg);
+  --jf-palette-common-white: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.dashboardDocument {
+    --jf-palette-text-primaryChannel: 248 250 252;
+    --jf-palette-text-secondaryChannel: 148 163 184;
+    --jf-palette-background-defaultChannel: 11 17 32;
+    --jf-palette-background-paperChannel: 15 23 42;
+    --jf-palette-primary-mainChannel: 248 250 252;
+    --jf-palette-secondary-mainChannel: 148 163 184;
+    --jf-palette-dividerChannel: 248 250 252;
+    --jf-palette-SnackbarContent-bg: var(--dash-fg);
+    --jf-palette-SnackbarContent-color: var(--dash-on-primary);
+  }
+}
+
+/* ==========================================================================
+   4. 顶栏 / 工具栏（MUI AppBar）
+   ========================================================================== */
+body.dashboardDocument .MuiAppBar-root {
+  background: var(--dash-toolbar) !important;
+  border-bottom: 1px solid var(--dash-border) !important;
+  box-shadow: none !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiToolbar-root {
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiIconButton-root {
+  color: var(--dash-fg-2) !important;
+  border-radius: var(--dash-radius) !important;
+  transition: background var(--dash-dur) var(--dash-ease), color var(--dash-dur) var(--dash-ease);
+}
+
+body.dashboardDocument .MuiIconButton-root:hover {
+  background: var(--dash-hover) !important;
+  color: var(--dash-fg) !important;
+}
+
+/* 顶栏标题 */
+body.dashboardDocument .MuiTypography-root {
+  color: var(--dash-fg) !important;
+}
+
+/* ==========================================================================
+   5. 侧边抽屉（MUI Drawer）
+   ========================================================================== */
+body.dashboardDocument .MuiDrawer-paper {
+  background: var(--dash-drawer) !important;
+  border-right: 1px solid var(--dash-border) !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiListItemButton-root,
+body.dashboardDocument .MuiListItem-root {
+  color: var(--dash-fg-2) !important;
+  border-radius: var(--dash-radius) !important;
+  margin: 0.15em 0.5em !important;
+  transition: background var(--dash-dur) var(--dash-ease), color var(--dash-dur) var(--dash-ease);
+}
+
+body.dashboardDocument .MuiListItemButton-root:hover,
+body.dashboardDocument .MuiListItem-root:hover {
+  background: var(--dash-hover) !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiListItemButton-root.Mui-selected,
+body.dashboardDocument .MuiListItem-root.Mui-selected,
+body.dashboardDocument .Mui-selected {
+  background: var(--dash-selected) !important;
+  color: var(--dash-fg) !important;
+  font-weight: 600 !important;
+}
+
+/* 抽屉分组标题 */
+body.dashboardDocument .MuiListSubheader-root {
+  background: var(--dash-drawer) !important;
+  color: var(--dash-fg-3) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* 抽屉底部分隔 */
+body.dashboardDocument .MuiDivider-root {
+  border-color: var(--dash-border) !important;
+}
+
+/* ==========================================================================
+   6. 页面容器 / 布局
+   ========================================================================== */
+body.dashboardDocument .mainAnimatedPage,
+body.dashboardDocument .dashboardPage {
+  color: var(--dash-fg) !important;
+}
+
+/* 页面标题 */
+body.dashboardDocument h1,
+body.dashboardDocument h2,
+body.dashboardDocument h3,
+body.dashboardDocument h4,
+body.dashboardDocument .MuiTypography-h4,
+body.dashboardDocument .MuiTypography-h5,
+body.dashboardDocument .MuiTypography-h6 {
+  color: var(--dash-fg) !important;
+  letter-spacing: -0.01em;
+}
+
+/* 页面描述文字 */
+body.dashboardDocument .MuiTypography-body1,
+body.dashboardDocument .MuiTypography-body2,
+body.dashboardDocument .MuiTypography-subtitle1,
+body.dashboardDocument .MuiTypography-subtitle2,
+body.dashboardDocument .fieldDescription {
+  color: var(--dash-fg-2) !important;
+}
+
+body.dashboardDocument .MuiTypography-caption {
+  color: var(--dash-fg-3) !important;
+}
+
+/* ==========================================================================
+   7. 统计卡片（Widget）
+   ========================================================================== */
+body.dashboardDocument .MuiCard-root,
+body.dashboardDocument .MuiPaper-root,
+body.dashboardDocument .MuiPaper-elevation,
+body.dashboardDocument .MuiPaper-rounded {
+  background: var(--dash-surface) !important;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius) !important;
+  box-shadow: var(--dash-shadow-sm) !important;
+  color: var(--dash-fg) !important;
+}
+
+/* 卡片标题 */
+body.dashboardDocument .MuiCardHeader-root,
+body.dashboardDocument .MuiCardHeader-title,
+body.dashboardDocument .MuiCardHeader-subheader {
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiCardHeader-subheader {
+  color: var(--dash-fg-2) !important;
+}
+
+/* 卡片内容文字 */
+body.dashboardDocument .MuiCardContent-root {
+  color: var(--dash-fg) !important;
+}
+
+/* Widget 数值（大字） */
+body.dashboardDocument .MuiTypography-h3,
+body.dashboardDocument .MuiTypography-h2 {
+  color: var(--dash-fg) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   8. 表格（material-react-table / MUI Table）
+   ========================================================================== */
+body.dashboardDocument .MuiTable-root,
+body.dashboardDocument .MuiTableBody-root,
+body.dashboardDocument .MuiTableContainer-root,
+body.dashboardDocument .MuiPaper-root .MuiTable-root {
+  background: var(--dash-surface) !important;
+  color: var(--dash-fg) !important;
+}
+
+/* 表头 */
+body.dashboardDocument .MuiTableHead-root,
+body.dashboardDocument .MuiTableRow-head,
+body.dashboardDocument .MuiTableCell-head,
+body.dashboardDocument .MuiTableCell-root.MuiTableCell-head {
+  background: var(--dash-surface-2) !important;
+  color: var(--dash-fg) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--dash-border) !important;
+}
+
+/* 表体 */
+body.dashboardDocument .MuiTableCell-root {
+  color: var(--dash-fg) !important;
+  border-bottom: 1px solid var(--dash-border) !important;
+}
+
+body.dashboardDocument .MuiTableRow-root {
+  transition: background var(--dash-dur) var(--dash-ease);
+}
+
+body.dashboardDocument .MuiTableRow-root:hover,
+body.dashboardDocument .MuiTableRow-root.Mui-selected {
+  background: var(--dash-hover) !important;
+}
+
+/* 排序图标 */
+body.dashboardDocument .MuiTableSortLabel-icon {
+  color: var(--dash-fg-3) !important;
+}
+
+body.dashboardDocument .MuiTableSortLabel-root.Mui-active,
+body.dashboardDocument .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon {
+  color: var(--dash-primary) !important;
+}
+
+/* MRT 工具栏 / 分页 */
+body.dashboardDocument .MuiToolbar-root,
+body.dashboardDocument .MuiTablePagination-root,
+body.dashboardDocument .MuiTablePagination-toolbar {
+  color: var(--dash-fg) !important;
+}
+
+/* ==========================================================================
+   9. 按钮（MUI Button）
+   ========================================================================== */
+body.dashboardDocument .MuiButton-root {
+  color: var(--dash-fg) !important;
+  border-radius: var(--dash-radius) !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  transition: background var(--dash-dur) var(--dash-ease), color var(--dash-dur) var(--dash-ease),
+    border-color var(--dash-dur) var(--dash-ease);
+}
+
+body.dashboardDocument .MuiButton-root:hover {
+  background: var(--dash-hover) !important;
+}
+
+/* 实心主按钮 */
+body.dashboardDocument .MuiButton-contained,
+body.dashboardDocument .MuiButton-containedPrimary,
+body.dashboardDocument .MuiButton-containedSecondary {
+  background: var(--dash-primary) !important;
+  color: var(--dash-on-primary) !important;
+  box-shadow: var(--dash-shadow-sm) !important;
+}
+
+body.dashboardDocument .MuiButton-contained:hover,
+body.dashboardDocument .MuiButton-containedPrimary:hover,
+body.dashboardDocument .MuiButton-containedSecondary:hover {
+  background: var(--dash-primary-hover) !important;
+  color: var(--dash-on-primary) !important;
+}
+
+/* 描边按钮 */
+body.dashboardDocument .MuiButton-outlined,
+body.dashboardDocument .MuiButton-outlinedPrimary {
+  border: 1px solid var(--dash-border-strong) !important;
+  background: transparent !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiButton-outlined:hover {
+  background: var(--dash-hover) !important;
+  border-color: var(--dash-border-strong) !important;
+}
+
+/* 文字按钮 */
+body.dashboardDocument .MuiButton-text,
+body.dashboardDocument .MuiButton-textPrimary {
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiButton-text:hover {
+  background: var(--dash-hover) !important;
+}
+
+/* 危险按钮 */
+body.dashboardDocument .MuiButton-containedError,
+body.dashboardDocument .MuiButton-outlinedError {
+  color: var(--dash-danger) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+}
+
+body.dashboardDocument .MuiButton-containedError {
+  background: var(--dash-danger) !important;
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   10. 表单控件
+   ========================================================================== */
+body.dashboardDocument .MuiInputBase-root,
+body.dashboardDocument .MuiOutlinedInput-root,
+body.dashboardDocument .MuiFilledInput-root,
+body.dashboardDocument .MuiTextField-root .MuiInputBase-root {
+  background: var(--dash-surface-2) !important;
+  color: var(--dash-fg) !important;
+  border-radius: var(--dash-radius) !important;
+}
+
+body.dashboardDocument .MuiOutlinedInput-notchedOutline {
+  border-color: var(--dash-border) !important;
+}
+
+body.dashboardDocument .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--dash-border-strong) !important;
+}
+
+body.dashboardDocument .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--dash-ring) !important;
+  border-width: 2px !important;
+}
+
+/* 输入文字 */
+body.dashboardDocument .MuiInputBase-input,
+body.dashboardDocument .MuiInputBase-input::placeholder {
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiInputBase-input::placeholder {
+  color: var(--dash-fg-3) !important;
+  opacity: 1 !important;
+}
+
+/* 标签 */
+body.dashboardDocument .MuiInputLabel-root,
+body.dashboardDocument .MuiFormLabel-root {
+  color: var(--dash-fg-2) !important;
+}
+
+body.dashboardDocument .MuiInputLabel-root.Mui-focused,
+body.dashboardDocument .MuiFormLabel-root.Mui-focused {
+  color: var(--dash-primary) !important;
+}
+
+/* 下拉菜单 */
+body.dashboardDocument .MuiMenu-paper,
+body.dashboardDocument .MuiMenuItem-root {
+  background: var(--dash-surface) !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiMenuItem-root:hover,
+body.dashboardDocument .MuiMenuItem-root.Mui-selected {
+  background: var(--dash-selected) !important;
+  color: var(--dash-fg) !important;
+}
+
+/* 复选框 / 单选 / 开关 */
+body.dashboardDocument .MuiCheckbox-root,
+body.dashboardDocument .MuiRadio-root,
+body.dashboardDocument .MuiSwitch-root {
+  color: var(--dash-fg-2) !important;
+}
+
+body.dashboardDocument .MuiCheckbox-root.Mui-checked,
+body.dashboardDocument .MuiRadio-root.Mui-checked,
+body.dashboardDocument .MuiSwitch-root.Mui-checked {
+  color: var(--dash-primary) !important;
+}
+
+body.dashboardDocument .MuiSwitch-track {
+  background: var(--dash-border-strong) !important;
+}
+
+body.dashboardDocument .MuiSwitch-root.Mui-checked .MuiSwitch-track {
+  background: var(--dash-primary) !important;
+  opacity: 1 !important;
+}
+
+body.dashboardDocument .MuiSwitch-thumb {
+  background: var(--dash-fg) !important;
+}
+
+/* ==========================================================================
+   11. 标签页 / Chip / 指示器
+   ========================================================================== */
+body.dashboardDocument .MuiTabs-root,
+body.dashboardDocument .MuiTab-root {
+  color: var(--dash-fg-2) !important;
+  text-transform: none !important;
+  transition: color var(--dash-dur) var(--dash-ease);
+}
+
+body.dashboardDocument .MuiTab-root:hover {
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiTab-root.Mui-selected,
+body.dashboardDocument .Mui-selected {
+  color: var(--dash-fg) !important;
+  font-weight: 600 !important;
+}
+
+body.dashboardDocument .MuiTabs-indicator {
+  background: var(--dash-primary) !important;
+}
+
+/* Chip */
+body.dashboardDocument .MuiChip-root {
+  background: var(--dash-surface-2) !important;
+  color: var(--dash-fg) !important;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius) !important;
+}
+
+body.dashboardDocument .MuiChip-colorSuccess {
+  background: rgba(22, 163, 74, 0.15) !important;
+  color: var(--dash-success) !important;
+  border-color: rgba(22, 163, 74, 0.3) !important;
+}
+
+body.dashboardDocument .MuiChip-colorError {
+  background: rgba(220, 38, 38, 0.12) !important;
+  color: var(--dash-danger) !important;
+  border-color: rgba(220, 38, 38, 0.3) !important;
+}
+
+body.dashboardDocument .MuiChip-colorWarning {
+  background: rgba(217, 119, 6, 0.15) !important;
+  color: var(--dash-warning) !important;
+  border-color: rgba(217, 119, 6, 0.3) !important;
+}
+
+body.dashboardDocument .MuiChip-colorInfo {
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: var(--dash-info) !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+/* ==========================================================================
+   12. 弹窗 / 对话框
+   ========================================================================== */
+body.dashboardDocument .MuiDialog-paper,
+body.dashboardDocument .MuiDialogContent-root,
+body.dashboardDocument .MuiDialogTitle-root,
+body.dashboardDocument .MuiDialogActions-root {
+  background: var(--dash-surface) !important;
+  color: var(--dash-fg) !important;
+}
+
+body.dashboardDocument .MuiDialog-paper {
+  border: 1px solid var(--dash-border) !important;
+  border-radius: var(--dash-radius-lg) !important;
+  box-shadow: var(--dash-shadow-lg) !important;
+}
+
+body.dashboardDocument .MuiDialogTitle-root {
+  border-bottom: 1px solid var(--dash-border) !important;
+  font-weight: 600 !important;
+}
+
+body.dashboardDocument .MuiDialogActions-root {
+  border-top: 1px solid var(--dash-border) !important;
+}
+
+/* Snackbar / Toast */
+body.dashboardDocument .MuiSnackbarContent-root,
+body.dashboardDocument .MuiAlert-root {
+  border-radius: var(--dash-radius) !important;
+  box-shadow: var(--dash-shadow-md) !important;
+}
+
+/* ==========================================================================
+   13. 滚动条
+   ========================================================================== */
+body.dashboardDocument ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body.dashboardDocument ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body.dashboardDocument ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.22);
+  border-radius: 8px;
+}
+
+body.dashboardDocument ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.dashboardDocument ::-webkit-scrollbar-thumb {
+    background: rgba(248, 250, 252, 0.22);
+  }
+  body.dashboardDocument ::-webkit-scrollbar-thumb:hover {
+    background: rgba(248, 250, 252, 0.4);
+  }
+}
+
+body.dashboardDocument * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dash-border-strong) transparent;
+}
+
+/* ==========================================================================
+   14. 焦点 ring（shadcn 风格）
+   ========================================================================== */
+body.dashboardDocument :focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--dash-bg), 0 0 0 4px var(--dash-ring) !important;
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  body.dashboardDocument *,
+  body.dashboardDocument *::before,
+  body.dashboardDocument *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
