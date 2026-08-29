@@ -24,6 +24,40 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-pill: 9999px;
+  /* B站字体栈（bilibili 网页版）：
+     苹方 PingFang SC → HarmonyOS Sans SC → 微软雅黑 → 系统回退 */
+  --bili-font: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei",
+    -apple-system, "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ==========================================================================
+   1.5 字体（B站字体，全局应用）
+   ========================================================================== */
+html,
+body,
+button,
+input,
+select,
+textarea,
+.card,
+.cardText,
+.sectionTitle,
+.pageTitle,
+.itemName,
+.listItem,
+.navMenuOption,
+.emby-button,
+.paper-icon-button-light,
+.dialog,
+.listItemBody,
+.listItemBodyText,
+.listItemMediaInfo,
+.emby-input,
+.emby-select,
+.emby-textarea,
+h1, h2, h3, h4, h5, h6,
+* {
+  font-family: var(--bili-font) !important;
 }
 
 /* ==========================================================================
