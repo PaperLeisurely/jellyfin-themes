@@ -36,14 +36,9 @@
   --sc-primary-hover: #1E293B;
   --sc-primary-soft: rgba(15, 23, 42, 0.08);
   --sc-ring: #0F172A;
-  /* 次要 / 弱化 */
-  --sc-secondary: #F1F5F9;
-  --sc-muted: #F1F5F9;
-  --sc-muted-fg: #64748B;
   /* 边框 */
   --sc-border: #E2E8F0;        /* slate-200 */
   --sc-border-strong: #CBD5E1; /* slate-300 */
-  --sc-divider: rgba(15, 23, 42, 0.08);
   /* 交互反馈 */
   --sc-hover: rgba(15, 23, 42, 0.05);
   --sc-active: rgba(15, 23, 42, 0.09);
@@ -55,13 +50,10 @@
   --sc-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   --sc-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
   --sc-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.10);
-  --sc-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08);
   --sc-shadow-card-hover: 0 8px 16px rgba(15, 23, 42, 0.12);
   /* 圆角（shadcn 默认 0.5rem） */
   --sc-radius: 0.5rem;
   --sc-radius-lg: 0.75rem;
-  --sc-radius-xl: 1rem;
-  --sc-radius-pill: 999px;
   /* 滚动条 */
   --sc-scrollbar: rgba(15, 23, 42, 0.22);
   --sc-scrollbar-hover: rgba(15, 23, 42, 0.4);
@@ -103,14 +95,9 @@
     --sc-primary-hover: #E2E8F0;
     --sc-primary-soft: rgba(248, 250, 252, 0.10);
     --sc-ring: #94A3B8;
-    /* 次要 / 弱化 */
-    --sc-secondary: #1E293B;
-    --sc-muted: #1E293B;
-    --sc-muted-fg: #94A3B8;
     /* 边框 */
     --sc-border: #1E293B;
     --sc-border-strong: #334155;
-    --sc-divider: rgba(248, 250, 252, 0.08);
     /* 交互反馈 */
     --sc-hover: rgba(248, 250, 252, 0.06);
     --sc-active: rgba(248, 250, 252, 0.10);
@@ -122,7 +109,6 @@
     --sc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
     --sc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
     --sc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-    --sc-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
     --sc-shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.5);
     /* 滚动条 */
     --sc-scrollbar: rgba(248, 250, 252, 0.22);
