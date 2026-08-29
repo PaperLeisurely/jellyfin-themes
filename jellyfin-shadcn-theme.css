@@ -2188,6 +2188,291 @@ fieldset {
 }
 
 /* ==========================================================================
+   18.6 深度界面覆盖（学习 ElegantFin 后补齐）
+   --------------------------------------------------------------------------
+   覆盖此前遗漏的界面：MUI 组件、正在播放页、即将播放弹窗、字母索引、
+   电视指南、操作面板、播放统计、歌词页、空状态等，黑白灰适配。
+   ========================================================================== */
+
+/* ---- MUI 组件（modern UI / 设置页） ---- */
+.MuiDrawer-paper {
+  background: var(--sc-sidebar) !important;
+  border-right: 1px solid var(--sc-border) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiAppBar-root {
+  background: var(--sc-toolbar) !important;
+  border-bottom: 1px solid var(--sc-border) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiListItem-root,
+.MuiList-root .MuiListItem-root {
+  color: var(--sc-fg) !important;
+}
+
+.MuiListItem-root:hover,
+.MuiList-dense .MuiListItem-root:hover {
+  background: var(--sc-hover) !important;
+}
+
+.Mui-selected,
+.MuiListItem-root.Mui-selected {
+  background: var(--sc-selected) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiIconButton-root,
+.MuiButtonBase-root {
+  color: var(--sc-fg-2) !important;
+}
+
+.MuiIconButton-root:hover,
+.MuiButtonBase-root:hover {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiTabs-root {
+  color: var(--sc-fg-2) !important;
+}
+
+.MuiTabs-indicator {
+  background: var(--sc-primary) !important;
+}
+
+.MuiPaper-elevation2 {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border) !important;
+}
+
+.MuiMenu-list {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiTable-root,
+.MuiTableBody-root {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiTableRow-head .MuiTableCell-root {
+  color: var(--sc-fg) !important;
+  border-bottom: 1px solid var(--sc-border) !important;
+}
+
+.MuiTableRow-root:hover {
+  background: var(--sc-hover) !important;
+}
+
+/* ---- 正在播放页 / 播放队列 ---- */
+.nowPlayingPageImage,
+.nowPlayingPageImageContainerNoAlbum {
+  border-radius: var(--sc-radius) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+}
+
+.nowPlayingPageImageContainerNoAlbum {
+  border: 1px solid var(--sc-border) !important;
+}
+
+.nowPlayingPageImageContainerNoAlbum .cardImageContainer .cardImageIcon {
+  color: var(--sc-fg-3) !important;
+}
+
+.nowPlayingSongName,
+.nowPlayingAlbum,
+.nowPlayingArtist {
+  color: var(--sc-fg) !important;
+}
+
+.nowPlayingInfoContainer,
+.nowPlayingButtonsContainer {
+  color: var(--sc-fg-2) !important;
+}
+
+.nowPlayingPlaylist {
+  background: var(--sc-surface) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  color: var(--sc-fg) !important;
+}
+
+/* ---- 即将播放弹窗（upNext） ---- */
+.upNextDialog-title,
+.upNextDialog-buttons,
+.upNextDialog-countdownText {
+  color: #fff !important;
+}
+
+.upNextContainer .upNextDialog-countdownText {
+  color: #fff !important;
+}
+
+/* ---- 字母索引（alphaPicker） ---- */
+.alphaPickerButton {
+  color: var(--sc-fg-3) !important;
+  font-family: var(--sc-font) !important;
+  margin: 0.15em !important;
+  border-radius: var(--sc-radius) !important;
+  transition: color var(--sc-dur) var(--sc-ease), background var(--sc-dur) var(--sc-ease);
+}
+
+.alphaPickerButton:hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.alphaPickerButton-selected {
+  color: var(--sc-fg) !important;
+  background: var(--sc-selected) !important;
+  font-weight: 600 !important;
+}
+
+/* ---- 电视指南（Live TV guide） ---- */
+.guide-date-tab-button.emby-tab-button-active,
+.guide-date-tab-button:focus {
+  color: var(--sc-fg) !important;
+}
+
+.guide-channelHeaderCell {
+  background: var(--sc-secondary) !important;
+  border-radius: var(--sc-radius) !important;
+  color: var(--sc-fg) !important;
+}
+
+.guide-programName,
+.guideProgramName {
+  color: var(--sc-fg) !important;
+}
+
+.guideChannelNumber,
+.guide-channelHeaderCell .guideChannelNumber {
+  color: var(--sc-fg-2) !important;
+}
+
+.guide-programNameCaret {
+  display: none !important;
+}
+
+/* ---- 操作面板 / 下拉菜单（actionSheet） ---- */
+.actionSheetContent,
+.actionSheetMenuItem {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+}
+
+.actionSheetMenuItem:hover {
+  background: var(--sc-hover) !important;
+}
+
+.actionsheetDivider {
+  border-color: var(--sc-border) !important;
+}
+
+/* ---- 播放统计（playerStats） ---- */
+.playerStats {
+  background: rgba(15, 23, 42, 0.75) !important;
+  border-radius: var(--sc-radius) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.playerStats-stats {
+  color: #fff !important;
+}
+
+/* ---- 歌词页 ---- */
+.lyricsLine {
+  color: var(--sc-fg-2) !important;
+  text-align: center !important;
+  transition: color var(--sc-dur) var(--sc-ease), transform var(--sc-dur) var(--sc-ease);
+}
+
+.lyricsLine.active,
+.pastLyric ~ .lyricsLine.active {
+  color: var(--sc-fg) !important;
+}
+
+.futureLyric {
+  color: var(--sc-fg-3) !important;
+}
+
+/* ---- 空状态 / 中心消息 ---- */
+.centerMessage {
+  color: var(--sc-fg-2) !important;
+}
+
+.noItemsMessage {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ---- 列表分组标题 ---- */
+.listGroupHeader {
+  color: var(--sc-fg-2) !important;
+  font-weight: 600 !important;
+}
+
+/* ---- 单选按钮（mdl-radio） ---- */
+.mdl-radio__outer-circle {
+  border-color: var(--sc-fg-3) !important;
+}
+
+.mdl-radio__button:checked + .mdl-radio__label + .mdl-radio__circles .mdl-radio__outer-circle,
+.mdl-radio__button:checked ~ .mdl-radio__circles .mdl-radio__inner-circle {
+  border-color: var(--sc-primary) !important;
+  background: var(--sc-primary) !important;
+}
+
+/* ---- 滚动箭头按钮 ---- */
+.emby-scrollbuttons-button {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg-2) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: 50% !important;
+}
+
+.emby-scrollbuttons-button:hover {
+  background: var(--sc-active) !important;
+  color: var(--sc-fg) !important;
+}
+
+/* ---- 详情页 LOGO / 容器补充 ---- */
+.detailPageWrapperContainer {
+  color: var(--sc-fg) !important;
+}
+
+.itemExternalLinks .button-link {
+  color: var(--sc-fg-2) !important;
+}
+
+.itemExternalLinks .button-link:hover {
+  color: var(--sc-fg) !important;
+}
+
+/* 多选复选框描边 */
+.multiSelectCheckboxOutline {
+  border-color: var(--sc-fg-3) !important;
+}
+
+/* 键盘导航焦点容器 */
+.focuscontainer-x .show-focus:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--sc-bg), 0 0 0 4px var(--sc-ring) !important;
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
    19. 收尾
    ========================================================================== */
 .backgroundContainer .cardPadder,
