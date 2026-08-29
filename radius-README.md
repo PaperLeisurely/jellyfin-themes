@@ -1,9 +1,12 @@
-# Jellyfin · shadcn/ui 圆角标准主题
+# Jellyfin · shadcn/ui 圆角 + 动效主题
 
-参考 [shadcn/ui](https://github.com/shadcn-ui/ui) 的圆角规范，为 Jellyfin 10.11.x **所有界面**添加统一圆角。
+参考 [shadcn/ui](https://github.com/shadcn-ui/ui) 规范，为 Jellyfin 10.11.x 所有界面添加：
 
-**本主题只做圆角**——不改颜色、不动布局、不加动效、不写任何插件避让规则。
-适合叠加在任何 Jellyfin 主题之上（把它放在 Custom CSS 的最前面即可）。
+- **第一步 · 统一圆角**（shadcn 圆角标准）
+- **第二步 · shadcn 风格动效**
+
+**本主题不改颜色、不动布局、不写任何插件避让规则**。
+适合叠加在任何 Jellyfin 主题之上（把它放在 Custom CSS 的最前面）。
 
 ## 安装
 
@@ -11,7 +14,24 @@
 2. 粘贴 `jellyfin-radius-theme.css` 全部内容
 3. 保存 → **Ctrl+F5**
 
-> 与主界面主题（如 shadcn 黑白）叠加时：先贴本圆角主题，再贴主主题。
+> 与主界面主题（如 shadcn 黑白）叠加时：先贴本主题，再贴主主题。
+
+## 动效清单（shadcn 风格）
+
+| 元素 | 动效 |
+| --- | --- |
+| 卡片 | hover 阴影提升 + 上浮 2px + 图片缩放 1.04，active 回位 |
+| 按钮 | hover 上浮 1px、active 回位；Fab hover 放大、active 缩小 |
+| 列表项 / 导航项 | hover 背景平滑过渡（150ms） |
+| 输入框 | 聚焦 **ring 光环**（2px 白 + 4px 深色） |
+| 弹窗 | **fade + zoom** 缩放淡入（200ms） |
+| 下拉菜单 | fade 淡入 |
+| 滚动箭头 | hover 放大、active 缩小 |
+| 图片加载 | 淡入动画 |
+| 键盘焦点 | 统一 focus ring 光环 |
+
+统一过渡时长 `150ms` / `200ms`，缓动曲线 `cubic-bezier(0.4, 0, 0.2, 1)`（shadcn 标准）；
+系统开启"减弱动态效果"时全部自动禁用。
 
 ## shadcn/ui 圆角规范映射
 
