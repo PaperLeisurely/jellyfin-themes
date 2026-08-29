@@ -1,0 +1,1086 @@
+/* ==========================================================================
+   Jellyfin · Google Chrome UI 主题
+   --------------------------------------------------------------------------
+   设计语言：谷歌浏览器界面风格
+   - 浅色模式：白/浅灰画布、白色顶栏与卡片、Chrome 蓝 #1A73E8
+   - 深色模式：深灰 #202124 画布、Chrome 深色蓝 #8AB4F8
+   - 自动跟随系统（prefers-color-scheme: light / dark）
+   - 地址栏式输入框（胶囊圆角 + 聚焦蓝色描边）
+   - Chrome 新标签页式卡片（hover 上浮 + 阴影 + 图片缩放微动效）
+   - Material 风格弹窗（16px 圆角 + 柔和阴影）
+   兼容：Jellyfin 10.11.11 主界面 ·
+         Media Bar 插件家族（IAmParadox27 / MakD / CodeDevMLH enhanced）·
+         jellyfin-danmaku 弹幕插件
+   使用：Jellyfin → 设置 → 显示 → 自定义 CSS，粘贴全部内容。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 设计令牌（Design Tokens）
+   --------------------------------------------------------------------------
+   浅色模式为默认值，深色模式在 @media (prefers-color-scheme: dark) 覆盖。
+   所有组件只引用变量，切换模式只需换变量值。
+   ========================================================================== */
+:root {
+  /* 画布 */
+  --chrome-bg: #F1F3F4;
+  --chrome-bg-grad: linear-gradient(180deg, #FAFBFD 0%, #F1F3F4 100%);
+  /* 表面 */
+  --chrome-surface: #FFFFFF;
+  --chrome-surface-2: #F8F9FA;
+  --chrome-toolbar: #FFFFFF;
+  --chrome-sidebar: #FFFFFF;
+  --chrome-overlay: rgba(255, 255, 255, 0.92);
+  /* 文字 */
+  --chrome-text: #202124;
+  --chrome-text-secondary: #5F6368;
+  --chrome-text-tertiary: #80868B;
+  --chrome-on-accent: #FFFFFF;
+  /* 强调色（Chrome 蓝） */
+  --chrome-accent: #1A73E8;
+  --chrome-accent-hover: #1765CC;
+  --chrome-accent-soft: rgba(26, 115, 232, 0.10);
+  --chrome-accent-ring: rgba(26, 115, 232, 0.30);
+  --chrome-link: #1A73E8;
+  /* 边框 / 分隔 */
+  --chrome-border: rgba(0, 0, 0, 0.12);
+  --chrome-border-strong: rgba(0, 0, 0, 0.25);
+  --chrome-divider: rgba(0, 0, 0, 0.08);
+  /* 交互反馈 */
+  --chrome-hover: rgba(0, 0, 0, 0.06);
+  --chrome-active: rgba(0, 0, 0, 0.10);
+  --chrome-selected: rgba(26, 115, 232, 0.12);
+  /* 输入框（地址栏风格） */
+  --chrome-omnibox: #F1F3F4;
+  --chrome-omnibox-focus: #FFFFFF;
+  /* 阴影 */
+  --chrome-shadow-sm: 0 1px 3px rgba(60, 64, 67, 0.20);
+  --chrome-shadow-md: 0 2px 8px rgba(60, 64, 67, 0.24);
+  --chrome-shadow-lg: 0 4px 20px rgba(60, 64, 67, 0.28);
+  --chrome-shadow-card: 0 1px 3px rgba(60, 64, 67, 0.18);
+  --chrome-shadow-card-hover: 0 6px 18px rgba(60, 64, 67, 0.28);
+  /* 圆角 */
+  --chrome-radius: 8px;
+  --chrome-radius-lg: 12px;
+  --chrome-radius-xl: 16px;
+  --chrome-radius-pill: 999px;
+  /* 滚动条 */
+  --chrome-scrollbar: rgba(0, 0, 0, 0.28);
+  --chrome-scrollbar-hover: rgba(0, 0, 0, 0.45);
+  /* 徽标 / 播放进度 */
+  --chrome-badge: #EA4335;
+  --chrome-progress: #1A73E8;
+  /* 字体：Chrome 使用 Roboto / Segoe UI / system */
+  --chrome-font: "Roboto", "Segoe UI", system-ui, -apple-system,
+    "Helvetica Neue", Arial, "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 画布：Chrome 深色模式 #202124 系 */
+    --chrome-bg: #202124;
+    --chrome-bg-grad: linear-gradient(180deg, #292A2D 0%, #202124 100%);
+    /* 表面 */
+    --chrome-surface: #292A2D;
+    --chrome-surface-2: #35363A;
+    --chrome-toolbar: #292A2D;
+    --chrome-sidebar: #292A2D;
+    --chrome-overlay: rgba(32, 33, 36, 0.92);
+    /* 文字 */
+    --chrome-text: #E8EAED;
+    --chrome-text-secondary: #9AA0A6;
+    --chrome-text-tertiary: #80868B;
+    --chrome-on-accent: #202124;
+    /* 强调色（Chrome 深色蓝） */
+    --chrome-accent: #8AB4F8;
+    --chrome-accent-hover: #AECBFA;
+    --chrome-accent-soft: rgba(138, 180, 248, 0.14);
+    --chrome-accent-ring: rgba(138, 180, 248, 0.35);
+    --chrome-link: #8AB4F8;
+    /* 边框 / 分隔 */
+    --chrome-border: rgba(255, 255, 255, 0.14);
+    --chrome-border-strong: rgba(255, 255, 255, 0.28);
+    --chrome-divider: rgba(255, 255, 255, 0.10);
+    /* 交互反馈 */
+    --chrome-hover: rgba(255, 255, 255, 0.08);
+    --chrome-active: rgba(255, 255, 255, 0.14);
+    --chrome-selected: rgba(138, 180, 248, 0.18);
+    /* 输入框（地址栏风格） */
+    --chrome-omnibox: #3C4043;
+    --chrome-omnibox-focus: #3C4043;
+    /* 阴影 */
+    --chrome-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+    --chrome-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.50);
+    --chrome-shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.60);
+    --chrome-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.40);
+    --chrome-shadow-card-hover: 0 6px 18px rgba(0, 0, 0, 0.55);
+    /* 滚动条 */
+    --chrome-scrollbar: rgba(255, 255, 255, 0.30);
+    --chrome-scrollbar-hover: rgba(255, 255, 255, 0.48);
+    /* 徽标 / 播放进度 */
+    --chrome-badge: #F28B82;
+    --chrome-progress: #8AB4F8;
+  }
+}
+
+/* ==========================================================================
+   2. 全局基础
+   ========================================================================== */
+/* 不设置 font-size：Jellyfin html 默认 20px(1080p)/27px，
+   任何 body font-size 覆盖都会按 rem/em 缩放全部布局尺寸 */
+html {
+  background: var(--chrome-bg);
+  color: var(--chrome-text);
+  font-family: var(--chrome-font);
+}
+
+body {
+  background: var(--chrome-bg-grad);
+  background-attachment: fixed;
+  color: var(--chrome-text);
+  font-family: var(--chrome-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景容器：保留 Jellyfin 默认行为（当前激活主题决定背景图），
+   只保证底色与主题一致；不清除行内 background-image */
+.backgroundContainer,
+#appBackground {
+  background-color: var(--chrome-bg) !important;
+}
+
+/* 文本选区：Chrome 蓝 */
+::selection {
+  background: var(--chrome-accent-ring);
+  color: var(--chrome-text);
+}
+
+/* 链接 */
+a {
+  color: var(--chrome-link) !important;
+}
+
+/* ==========================================================================
+   3. 滚动条（Chrome 细滚动条）
+   ========================================================================== */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--chrome-scrollbar);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--chrome-scrollbar-hover);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--chrome-scrollbar) transparent;
+}
+
+/* ==========================================================================
+   4. 顶栏（Chrome 浏览器工具栏风格）
+   --------------------------------------------------------------------------
+   白色/深灰底 + 底部 1px 分隔线；按钮 hover 圆底灰；
+   头像按钮排除（其 background-image 由行内样式设置，background 简写
+   悬停会把它抹掉）。
+   ========================================================================== */
+html:not(.layout-tv) .skinHeader:not(.osdHeader) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100000 !important;
+  contain: none !important;
+  background: var(--chrome-toolbar) !important;
+  border-bottom: 1px solid var(--chrome-divider);
+  color: var(--chrome-text);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 顶栏标题文字 */
+.skinHeader:not(.osdHeader) .headerText,
+.skinHeader:not(.osdHeader) .pageTitle {
+  color: var(--chrome-text) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+}
+
+/* 顶栏按钮：Chrome 工具栏图标按钮（圆形 hover 底） */
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--chrome-text-secondary) !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound):hover {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-hover) !important;
+}
+
+/* 顶栏搜索按钮（Chrome 风格放大镜） */
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound).btnSearchButton {
+  color: var(--chrome-text-secondary) !important;
+}
+
+/* 播放器 OSD 顶栏：保持 Jellyfin 原始样式（深色渐变遮罩），
+   避免在视频画面上叠加浅色顶栏 */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   5. 侧边栏 / 抽屉（Chrome 设置菜单风格）
+   --------------------------------------------------------------------------
+   白/深灰底、无左侧边框阴影，选中项 Chrome 蓝软底 + 右侧胶囊圆角。
+   ========================================================================== */
+#mainDrawer,
+.mainDrawer {
+  background: var(--chrome-sidebar) !important;
+  box-shadow: 1px 0 0 var(--chrome-divider);
+  color: var(--chrome-text-secondary);
+}
+
+/* Chrome 风格抽屉徽标区 */
+.sidebarHeader {
+  color: var(--chrome-text) !important;
+}
+
+.sidebarLogo {
+  filter: none !important;
+}
+
+/* 导航项 */
+.navMenuOption {
+  color: var(--chrome-text-secondary) !important;
+  border-radius: 0 24px 24px 0 !important;
+  margin-right: 8px !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navMenuOption:hover {
+  background: var(--chrome-hover) !important;
+  color: var(--chrome-text) !important;
+}
+
+.navMenuOption.selected,
+.navMenuOption.selectable.selected,
+.navMenuOption.selectable:focus {
+  background: var(--chrome-selected) !important;
+  color: var(--chrome-accent) !important;
+  font-weight: 500 !important;
+}
+
+/* 抽屉底部 */
+.sidebarFooter {
+  color: var(--chrome-text-tertiary) !important;
+  border-top: 1px solid var(--chrome-divider);
+}
+
+/* 打开抽屉时的遮罩：Chrome 深色半透明 */
+.tmla-mask.backdrop {
+  background: rgba(32, 33, 36, 0.45) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   6. 区块标题（Chrome 页面标题风格）
+   ========================================================================== */
+.sectionTitle,
+.sectionTitleText,
+.sectionTitleContainer .sectionTitle,
+.pageTitle {
+  color: var(--chrome-text) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   7. 卡片（Chrome 新标签页快捷方式风格）
+   --------------------------------------------------------------------------
+   - 8px 圆角、hover 上浮 + 阴影提升
+   - 图片 hover 轻微放大（保留 QQ 回弹微动效，但幅度收敛）
+   - 纤细描边画在图片元素自身：随图片缩放同步放大缩小
+   ========================================================================== */
+.cardBox {
+  border-radius: var(--chrome-radius);
+}
+
+.cardScalable {
+  position: relative;
+  border-radius: var(--chrome-radius);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.cardImageContainer,
+.chapterCardImageContainer {
+  /* 底色透明：避免圆角处露出深色占位底形成黑边；
+     图片由懒加载器以行内 background-image 设在本元素上，
+     不能用 background 简写 !important（会覆盖并导致图片不显示） */
+  background-color: transparent !important;
+  border-radius: var(--chrome-radius);
+  overflow: hidden;
+}
+
+.cardImage {
+  border-radius: var(--chrome-radius);
+  /* 基础态过渡 = 离开悬停时生效：QQ 回弹（y>1 过冲） */
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  /* 纤细描边画在图片自身：随 transform 同步缩放 */
+  box-shadow: inset 0 0 0 1px var(--chrome-border);
+}
+
+/* 首页海报等旧版卡片：图片为 background-image 设在 .cardImageContainer 上 */
+.cardImageContainer {
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px var(--chrome-border);
+}
+
+.cardPadder {
+  background-color: var(--chrome-surface-2) !important;
+}
+
+.defaultCardBackground,
+.cardContent:not(.defaultCardBackground) {
+  background-color: var(--chrome-surface-2) !important;
+}
+
+/* 悬停态：Chrome NTP 快捷方式效果（上浮 + 阴影 + 图片微放大） */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    box-shadow: var(--chrome-shadow-card-hover);
+  }
+
+  .card:hover .cardImage,
+  .card:hover .cardImageContainer {
+    /* 进入悬停时平滑放大；移开时走基础态弹性过渡（QQ 回弹） */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease,
+      box-shadow 0.3s ease;
+    transform: scale(1.06);
+    filter: brightness(1.02);
+    box-shadow: inset 0 0 0 1px var(--chrome-accent-ring);
+  }
+
+  .card:hover .cardBox {
+    transform: translateY(-3px);
+  }
+
+  .card:active .cardBox {
+    transform: translateY(-1px);
+  }
+}
+
+/* 卡片文字 */
+.cardText {
+  color: var(--chrome-text) !important;
+}
+
+.cardText-secondary,
+.cardText .cardText-secondary {
+  color: var(--chrome-text-secondary) !important;
+}
+
+/* 剧集列表（每集）缩略图 */
+.listItemImage {
+  border-radius: var(--chrome-radius);
+}
+
+/* 悬停播放按钮（Fab）：Chrome 蓝 */
+.cardOverlayFab {
+  background: var(--chrome-accent) !important;
+  color: var(--chrome-on-accent) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--chrome-shadow-md) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cardOverlayFab:hover {
+  background: var(--chrome-accent-hover) !important;
+  transform: scale(1.08);
+  box-shadow: var(--chrome-shadow-lg);
+}
+
+.cardOverlayFab:active {
+  transform: scale(0.88) !important;
+}
+
+/* 卡片角标（未读数 / 已播放）：Chrome 风格 */
+.videoIndicator,
+.cardIndicators .videoIndicator {
+  background: rgba(32, 33, 36, 0.78) !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 分级标签 */
+.age-rating {
+  background: var(--chrome-surface-2) !important;
+  color: var(--chrome-text-secondary) !important;
+  border: 1px solid var(--chrome-border) !important;
+  border-radius: 4px !important;
+}
+
+/* ==========================================================================
+   8. 按钮（Chrome / Material 风格）
+   ========================================================================== */
+/* 默认按钮 */
+.emby-button {
+  color: var(--chrome-text) !important;
+  border-radius: var(--chrome-radius) !important;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.emby-button:hover {
+  background: var(--chrome-hover) !important;
+}
+
+/* 主按钮（raised / primary）：Chrome 蓝填充 */
+.emby-button.raised,
+.emby-button.raised.primary,
+.btn-primary,
+.button-submit,
+.btnSubmit {
+  background: var(--chrome-accent) !important;
+  color: var(--chrome-on-accent) !important;
+  border-radius: var(--chrome-radius) !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+
+.emby-button.raised:hover,
+.emby-button.raised.primary:hover,
+.btn-primary:hover,
+.button-submit:hover,
+.btnSubmit:hover {
+  background: var(--chrome-accent-hover) !important;
+  color: var(--chrome-on-accent) !important;
+  box-shadow: var(--chrome-shadow-sm) !important;
+}
+
+/* 文字按钮（ghost） */
+.emby-button.accent {
+  color: var(--chrome-accent) !important;
+  background: transparent !important;
+}
+
+.emby-button.accent:hover {
+  background: var(--chrome-accent-soft) !important;
+}
+
+/* 图标按钮 */
+.paper-icon-button-light {
+  color: var(--chrome-text-secondary) !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.paper-icon-button-light:hover:not(:disabled) {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-hover) !important;
+}
+
+.paper-icon-button-light:focus:not(:disabled),
+.paper-icon-button-light.show-focus:focus {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-hover) !important;
+}
+
+/* 键盘焦点环：Chrome 蓝 */
+.show-focus:focus,
+.emby-button:focus-visible,
+.paper-icon-button-light:focus-visible {
+  outline: 2px solid var(--chrome-accent-ring) !important;
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   9. 输入框 / 下拉 / 滑块（Chrome 地址栏风格）
+   ========================================================================== */
+.emby-input,
+.emby-textarea,
+.inputContainer input {
+  background: var(--chrome-omnibox) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--chrome-radius-pill) !important;
+  color: var(--chrome-text) !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.emby-input:hover,
+.emby-textarea:hover,
+.inputContainer input:hover {
+  background: var(--chrome-omnibox-focus) !important;
+  box-shadow: var(--chrome-shadow-sm) !important;
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.inputContainer input:focus {
+  background: var(--chrome-omnibox-focus) !important;
+  border-color: var(--chrome-accent) !important;
+  box-shadow: 0 0 0 3px var(--chrome-accent-ring) !important;
+  outline: none !important;
+}
+
+/* 下拉框 */
+.emby-select,
+.selectContainer select {
+  background: var(--chrome-omnibox) !important;
+  border: 1px solid var(--chrome-border) !important;
+  border-radius: var(--chrome-radius) !important;
+  color: var(--chrome-text) !important;
+  box-shadow: none !important;
+}
+
+.emby-select:focus {
+  border-color: var(--chrome-accent) !important;
+  box-shadow: 0 0 0 3px var(--chrome-accent-ring) !important;
+}
+
+/* 滑块（进度条 / 音量） */
+input[is="emby-slider"],
+input[type="range"] {
+  accent-color: var(--chrome-progress);
+}
+
+.emby-slider-container .emby-slider::-webkit-slider-runnable-track {
+  background: var(--chrome-border) !important;
+}
+
+/* ==========================================================================
+   10. 对话框 / 弹窗 / 操作菜单（Material 风格）
+   ========================================================================== */
+.dialog,
+.dialog.animated-dialog,
+.formDialog {
+  background: var(--chrome-surface) !important;
+  color: var(--chrome-text) !important;
+  border-radius: var(--chrome-radius-xl) !important;
+  box-shadow: var(--chrome-shadow-lg) !important;
+  border: 1px solid var(--chrome-divider);
+}
+
+.dialog-backdrop {
+  background: rgba(32, 33, 36, 0.5) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.formDialogHeader {
+  background: transparent !important;
+  color: var(--chrome-text) !important;
+}
+
+.formDialogHeaderTitle {
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+}
+
+.formDialogFooter {
+  background: transparent !important;
+  border-top: 1px solid var(--chrome-divider) !important;
+}
+
+/* 操作菜单 / 下拉菜单 */
+.paper-list-container {
+  background: var(--chrome-surface) !important;
+  border-radius: var(--chrome-radius-lg) !important;
+  box-shadow: var(--chrome-shadow-lg) !important;
+  color: var(--chrome-text) !important;
+  border: 1px solid var(--chrome-divider);
+}
+
+.listItem {
+  color: var(--chrome-text) !important;
+  border-radius: var(--chrome-radius);
+}
+
+.listItem:hover {
+  background: var(--chrome-hover) !important;
+}
+
+.listItem:focus {
+  background: var(--chrome-hover) !important;
+}
+
+/* 复选框 / 单选按钮：Chrome 蓝 */
+.checkboxOutline {
+  border-color: var(--chrome-text-tertiary) !important;
+}
+
+.checkbox:checked + .checkboxOutline {
+  background: var(--chrome-accent) !important;
+  border-color: var(--chrome-accent) !important;
+}
+
+.checkbox:checked + .checkboxOutline::after {
+  border-color: var(--chrome-on-accent) !important;
+}
+
+.radioOutline {
+  border-color: var(--chrome-text-tertiary) !important;
+}
+
+.radio:checked + .radioOutline {
+  border-color: var(--chrome-accent) !important;
+}
+
+.radio:checked + .radioOutline::after {
+  background: var(--chrome-accent) !important;
+}
+
+/* ==========================================================================
+   11. 列表（详情页 / 媒体列表，Chrome 列表风格）
+   ========================================================================== */
+.listView .listItem {
+  background: transparent !important;
+}
+
+.listView .listItem:hover {
+  background: var(--chrome-hover) !important;
+  border-radius: var(--chrome-radius);
+}
+
+/* 当前播放行高亮 */
+.listItem:focus,
+.listItem.selected {
+  background: var(--chrome-selected) !important;
+  color: var(--chrome-accent) !important;
+}
+
+/* ==========================================================================
+   12. 正在播放栏（Chrome 底栏风格）
+   ========================================================================== */
+.nowPlayingBar {
+  background: var(--chrome-toolbar) !important;
+  border-top: 1px solid var(--chrome-divider);
+  color: var(--chrome-text) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 顶部播放进度细线（Chrome 蓝） */
+.nowPlayingBarTop {
+  background: var(--chrome-progress) !important;
+  opacity: 0.9;
+}
+
+.nowPlayingBarText,
+.nowPlayingBarTitle,
+.nowPlayingBarSubTitle {
+  color: var(--chrome-text) !important;
+}
+
+.nowPlayingBarSubTitle {
+  color: var(--chrome-text-secondary) !important;
+}
+
+.nowPlayingBar .mediaButton {
+  color: var(--chrome-text-secondary) !important;
+}
+
+.nowPlayingBar .mediaButton:hover {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-hover) !important;
+}
+
+.nowPlayingBar .playPauseButton {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-accent-soft) !important;
+  border-radius: 50% !important;
+}
+
+.nowPlayingBar .playPauseButton:hover {
+  background: var(--chrome-selected) !important;
+}
+
+/* 进度条滑块 */
+.nowPlayingBarPositionSlider::-webkit-slider-thumb {
+  background: var(--chrome-progress) !important;
+  border-radius: 50% !important;
+}
+
+/* ==========================================================================
+   13. 移动端底部导航
+   ========================================================================== */
+.appfooter {
+  background: var(--chrome-toolbar) !important;
+  border-top: 1px solid var(--chrome-divider);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.appfooter .emby-button {
+  color: var(--chrome-text-secondary) !important;
+}
+
+.appfooter .emby-button:hover,
+.appfooter .emby-button.show-focus:focus {
+  color: var(--chrome-text) !important;
+  background: var(--chrome-hover) !important;
+}
+
+.appfooter .emby-button.active {
+  color: var(--chrome-accent) !important;
+}
+
+/* ==========================================================================
+   14. 播放器 OSD（保持 Jellyfin 默认深色，仅统一图标配色）
+   --------------------------------------------------------------------------
+   播放器背景保持默认纯黑，不做任何美化；OSD 控制图标用浅色，
+   避免在深色视频上不可见。
+   ========================================================================== */
+.videoOsdBottom {
+  color: #fff;
+}
+
+.osdControls .paper-icon-button-light {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.osdControls .paper-icon-button-light:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+}
+
+.osdTextContainer {
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   15. Media Bar 插件适配
+   --------------------------------------------------------------------------
+   布局尺寸沿用插件默认（只做微调），配色改为 Chrome 风格。
+   注意：增强版插件的移动端规则带 !important，需用 #id 前缀覆盖。
+   ========================================================================== */
+#slides-container {
+  position: absolute;
+  top: calc(11.25em + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100vw - 2 * 0.5cm);
+  height: 55vh;
+  overflow: hidden;
+  border-radius: var(--chrome-radius-xl);
+  box-shadow: inset 0 0 0 1px var(--chrome-border);
+  z-index: 5;
+}
+
+@media (min-width: 75em) {
+  #slides-container {
+    top: calc(7em + 16px);
+  }
+}
+
+@media (max-width: 767px) {
+  #slides-container {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + 16px + 0.5cm);
+    border-radius: var(--chrome-radius-lg);
+  }
+}
+
+/* 左侧黑色渐变遮罩：保证白色文字可读（Chrome 风格深色渐变） */
+#slides-container .gradient-overlay {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.4) 30%,
+    rgba(0, 0, 0, 0) 65%
+  );
+}
+
+#slides-container .backdrop-overlay {
+  background: transparent !important;
+}
+
+/* 标题 LOGO：上移 2cm，Chrome 风格（浅色为暗色文字、深色为白色） */
+#slides-container .logo-container {
+  top: calc(15vh - 2cm) !important;
+}
+
+#slides-container .logo-title-fallback {
+  color: #fff !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+
+/* 信息区文字：白色（叠加在图片上） */
+#slides-container .info-container,
+#slides-container .misc-info,
+#slides-container .genre,
+#slides-container .date,
+#slides-container .runTime,
+#slides-container .plot {
+  color: #fff !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* 播放按钮：Chrome 蓝 */
+#slides-container .button-container .emby-button.raised {
+  background: var(--chrome-accent) !important;
+  color: var(--chrome-on-accent) !important;
+}
+
+#slides-container .button-container .emby-button.raised:hover {
+  background: var(--chrome-accent-hover) !important;
+}
+
+/* 轮播圆点 */
+#slides-container .dot {
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+#slides-container .dot.active {
+  background: #fff !important;
+}
+
+/* 箭头按钮 */
+#slides-container .arrow {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 内容区块跟随头图底部（保留原布局公式） */
+#indexPage .homeSectionsContainer {
+  top: calc(11.25em + 16px + 55vh - 1.5cm) !important;
+}
+
+@media (min-width: 75em) {
+  #indexPage .homeSectionsContainer {
+    top: calc(7em + 16px + 55vh - 1.5cm) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  #indexPage .homeSectionsContainer {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + 16px + 0.5cm + 55vh - 1.5cm) !important;
+  }
+}
+
+/* 首页第一个区块：去掉多余上边距（紧贴头图） */
+#indexPage .homeSectionsContainer > .section0 {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 移动端：内容居中、LOGO/信息/圆点/按钮位置微调（保留原布局公式） */
+@media (max-width: 767px) {
+  #slides-container .logo-container {
+    bottom: calc(13em) !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    position: absolute !important;
+  }
+
+  #slides-container .info-container {
+    bottom: 9.3em !important;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+    position: absolute !important;
+  }
+
+  #slides-container .genre {
+    bottom: 7.3em !important;
+    left: 0 !important;
+    right: 0 !important;
+    text-align: center !important;
+    position: absolute !important;
+  }
+
+  #slides-container .dot-container,
+  #slides-container .dots-container {
+    bottom: calc(3.8em + 1cm) !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    justify-content: center !important;
+    display: flex !important;
+  }
+
+  #slides-container .button-container {
+    bottom: 1.5em !important;
+    left: 0 !important;
+    right: 0 !important;
+    justify-content: center !important;
+    display: flex !important;
+    position: absolute !important;
+  }
+
+  /* 移动端隐藏简介（保持简洁） */
+  #slides-container .plot-container {
+    display: none !important;
+  }
+
+  /* "1 Season" 不换行 */
+  #slides-container .runTime {
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+  }
+}
+
+/* ==========================================================================
+   16. jellyfin-danmaku 弹幕插件适配
+   ========================================================================== */
+/* 弹幕画布：位于视频、顶栏、播放栏之上（插件 pointer-events:none 不影响点击） */
+#danmakuWrapper {
+  z-index: 300 !important;
+}
+
+/* 设置侧边栏：Chrome 表面色 */
+.danmakuSidebar {
+  background: var(--chrome-surface) !important;
+  border-left: 1px solid var(--chrome-border-strong) !important;
+  border-radius: 14px 0 0 14px !important;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5) !important;
+  color: var(--chrome-text) !important;
+  font-family: var(--chrome-font) !important;
+}
+
+.danmakuSidebarHeader {
+  border-bottom: 1px solid var(--chrome-divider) !important;
+}
+
+.danmakuSidebarTitle {
+  color: var(--chrome-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.danmakuSidebarSaveButton {
+  background: var(--chrome-accent) !important;
+  color: var(--chrome-on-accent) !important;
+  border-radius: var(--chrome-radius) !important;
+}
+
+.danmakuSidebarSaveButton:hover {
+  background: var(--chrome-accent-hover) !important;
+}
+
+/* 弹幕对话框 */
+.dialogOverlay {
+  background: rgba(32, 33, 36, 0.5) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* 弹幕开关按钮（播放器控制栏） */
+#displayDanmaku {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ==========================================================================
+   17. 登录页 / 启动页
+   ========================================================================== */
+.splashLogo {
+  filter: none !important;
+}
+
+.loginForm {
+  background: var(--chrome-overlay) !important;
+  border: 1px solid var(--chrome-divider);
+  border-radius: var(--chrome-radius-xl) !important;
+  box-shadow: var(--chrome-shadow-lg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.loginForm h1 {
+  color: var(--chrome-text) !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   18. 杂项 / 通用
+   ========================================================================== */
+h1, h2, h3, h4 {
+  color: var(--chrome-text);
+  font-family: var(--chrome-font);
+  letter-spacing: -0.01em;
+}
+
+/* 描述文字 */
+.fieldDescription {
+  color: var(--chrome-text-tertiary) !important;
+}
+
+/* 警告 / 错误 */
+.text-warning,
+.emby-warning {
+  color: var(--chrome-badge) !important;
+}
+
+/* 空状态 */
+.emptyState {
+  color: var(--chrome-text-secondary) !important;
+}
+
+/* 正在加载指示条（Chrome 风格：蓝色细条） */
+.loadingSpinner {
+  border-color: var(--chrome-accent) !important;
+  border-top-color: transparent !important;
+}
+
+/* 电视布局：保持圆角适配 */
+.layout-tv .navMenuOption {
+  border-radius: var(--chrome-radius) !important;
+}
+
+.layout-tv .cardOverlayFab {
+  border-radius: 50% !important;
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   19. 收尾
+   ========================================================================== */
+/* 暗色主题下可能残留的默认白底元素，统一归为表面色 */
+.backgroundContainer .cardPadder,
+.backgroundContainer .defaultCardBackground {
+  background-color: var(--chrome-surface-2) !important;
+}
