@@ -1,0 +1,2416 @@
+/* ==========================================================================
+   Jellyfin 10.11.11 — Linear Style 暗紫主题
+   Linear 风格主界面主题 CSS（暗紫基调版）
+   --------------------------------------------------------------------------
+   用法：
+     1) 打开 Jellyfin → 控制台 → 常规 → 自定义 CSS（服务器级）
+        或：设置 → 显示 → 自定义 CSS（用户级）
+     2) 把本文件全部内容粘贴进去，保存并刷新页面即可。
+
+   特性：
+     · 完全兼容 Media Bar 插件家族（.featured-content 结构）
+       - IAmParadox27/jellyfin-plugin-media-bar（10.11 专用分支）
+       - MakD/Jellyfin-Media-Bar（slideshowpure 版）
+       - CodeDevMLH/jellyfin-plugin-media-bar-enhanced（含 .media-bar-* 设置弹窗 / MUI）
+     · 完全兼容 jellyfin-danmaku 弹幕插件（油猴脚本 ede.user.js）
+       https://github.com/Izumiko/jellyfin-danmaku
+       - #danmakuWrapper 弹幕画布层 / #displayDanmaku 播放器开关
+       - #danmakuSidebar 设置侧边栏 / .danmaku-tab-* / .dialogOverlay 对话框全套
+     · Media Bar 头图可限制在圆角矩形框内（卡片式横幅）
+     · 风格：大面积暗紫底色、紫罗兰渐变、纤细描边、毛玻璃模糊磨砂、
+       柔和微动效，整体保持简单简洁（无流光扫过、无阴影）
+     · 纯 CSS 轻量方案：单文件、无 JS、无任何外部依赖（含中文字体回退），
+       直接粘贴到自定义 CSS 即可
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 设计变量（Design Tokens · 暗紫基调）
+   ========================================================================== */
+:root {
+  /* 大面积暗紫画布 */
+  --lin-bg: #0A0910;
+  --lin-bg-elevated: #0F0D17;
+  --lin-bg-overlay: #16131F;
+  --lin-bg-inset: #0C0A13;
+  --lin-bg-hover: rgba(255, 255, 255, 0.05);
+  --lin-bg-active: rgba(255, 255, 255, 0.09);
+  --lin-bg-selected: rgba(139, 92, 246, 0.15);
+
+  /* 纤细描边（紫调） */
+  --lin-border: rgba(163, 142, 255, 0.1);
+  --lin-border-strong: rgba(163, 142, 255, 0.2);
+  --lin-border-input: rgba(163, 142, 255, 0.24);
+
+  /* 文字层级 */
+  --lin-text: #EDEBF6;
+  --lin-text-secondary: #A6A0BE;
+  --lin-text-tertiary: #716B87;
+  --lin-text-faint: #4E4A63;
+
+  /* 强调色（Linear 暗紫 · 紫罗兰） */
+  --lin-accent: #8B5CF6;
+  --lin-accent-hover: #9D74F8;
+  --lin-accent-active: #7C4EE4;
+  --lin-accent-muted: rgba(139, 92, 246, 0.16);
+  --lin-accent-glow: rgba(139, 92, 246, 0.42);
+  --lin-highlight: #A78BFA;
+
+  /* 语义色 */
+  --lin-success: #4CC38A;
+  --lin-warning: #F5A623;
+  --lin-danger: #F24822;
+
+  /* 形状与阴影（紫调投影） */
+  --lin-radius: 6px;
+  --lin-radius-lg: 8px;
+  --lin-radius-xl: 10px;
+  --lin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --lin-shadow-md: 0 4px 16px rgba(12, 8, 24, 0.5);
+  --lin-shadow-lg: 0 12px 40px rgba(12, 8, 24, 0.62);
+
+  /* Media Bar 头图圆角矩形框：圆角；--lin-hero-margin 顶栏间距余量、
+     --lin-hero-side-margin 左右留白（默认 0.5cm）、--lin-hero-bottom-margin 与下方板块间距
+     （默认 -1.5cm：我的媒体 = 头图顶部 + 头图高度 − 1.5cm，标题压进卡片底部 1.5cm） */
+  --lin-hero-radius: 16px;
+  --lin-hero-margin: 16px;
+  --lin-hero-side-margin: 0.5cm;
+  --lin-hero-bottom-margin: -1.5cm;
+
+  /* 字体：纯系统栈（无外部依赖），已含中文字体回退 */
+  --lin-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Noto Sans CJK SC', Arial, sans-serif;
+
+  /* 兼容 Jellyfin 内部可能引用的变量 */
+  --accent: var(--lin-accent);
+  --accent-color: var(--lin-accent);
+  --highlight: var(--lin-highlight);
+  --selection-color: var(--lin-accent);
+  --font-family: var(--lin-font);
+}
+
+/* ==========================================================================
+   2. 全局基础
+   ========================================================================== */
+/* 注意：不设置 html/body 的背景色 —— 页面背景保持 Jellyfin 默认
+   （.backgroundContainer / html 由当前激活主题决定），主题不再美化背景 */
+html {
+  color: var(--lin-text);
+  font-family: var(--lin-font);
+}
+
+body {
+  color: var(--lin-text);
+  font-family: var(--lin-font) !important;
+  /* 注意：不设置 font-size —— Jellyfin html 默认 20px(1080p)/27px，
+     任何 body font-size 覆盖都会按 rem/em 缩放全部布局尺寸 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   背景层：不做任何修改，保持 Jellyfin 默认
+   --------------------------------------------------------------------------
+   已移除本主题对背景的全部美化处理：
+   - .backgroundContainer / #appBackground 的暗紫渐变 + 噪点
+   - .backgroundContainer.withBackdrop 的磨砂 blur
+   - html / body 的背景色覆盖
+   - 背景光斑（::before / ::after 径向渐变 + 漂移动画）
+   - 播放器页面的背景特殊处理（html:has / body:has / transparentDocument）
+   现在页面背景完全由 Jellyfin 当前激活主题决定（原版 _theme.scss:
+   .backgroundContainer, html { background-color: var(--jf-palette-
+   background-default) ... }），主题只负责卡片/按钮/顶栏等前景元素。
+   ========================================================================== */
+
+/* ---- 微动效关键帧 ---- */
+/* 激活圆点呼吸辉光 */
+@keyframes lin-dot-pulse {
+  0%, 100% { box-shadow: 0 0 6px var(--lin-accent-glow); }
+  50% { box-shadow: 0 0 14px var(--lin-accent-glow); }
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 主页面容器 */
+.mainAnimatedPage,
+.page {
+  background: transparent !important;
+}
+
+/* 文本颜色统一 */
+.skinBody,
+.skinBody-withBackground,
+.mainAnimatedPages {
+  color: var(--lin-text);
+}
+
+a {
+  color: var(--lin-highlight);
+}
+
+a:hover {
+  color: var(--lin-accent-hover);
+}
+
+/* 选中文本 */
+::selection {
+  background: var(--lin-accent-glow);
+  color: #fff;
+}
+
+/* 键盘焦点（Linear 风格：紫罗兰描边 + 柔和外圈） */
+:focus-visible,
+.show-focus:focus {
+  outline: 2px solid var(--lin-accent) !important;
+  outline-offset: 2px;
+  border-radius: var(--lin-radius);
+}
+
+/* ==========================================================================
+   3. 滚动条
+   ========================================================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3A3550 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3A3550;
+  border-radius: 8px;
+  border: 2px solid var(--lin-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4A4466;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ==========================================================================
+   4. 顶栏 Header
+   --------------------------------------------------------------------------
+   顶栏永远置于最前方（用户要求）：固定定位 + 超高 z-index，
+   高于所有页面内容与 Media Bar 头图（z-index ≤ 5）；
+   低于弹幕插件的侧边栏(1000000)/对话框(2000000)，弹层仍正常覆盖顶栏。
+   contain: none 解除 Jellyfin 自带 contain:paint——它会把溢出顶栏边界的
+   内容（首页"首页/我的最爱"标签行用负 margin 叠在顶栏下半部）裁掉，
+   并会与 backdrop-filter 触发渲染裁切（logo/内容显示一半）。
+   :not(.osdHeader) 排除播放器 OSD 顶栏，避免 backdrop-filter 磨糊视频弹幕。
+   ========================================================================== */
+html:not(.layout-tv) .skinHeader:not(.osdHeader) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100000 !important;
+  contain: none !important;
+}
+
+.skinHeader:not(.osdHeader) {
+  color: var(--lin-text);
+  background: transparent;
+}
+
+.skinHeader.skinHeader-withBackground:not(.osdHeader),
+.skinHeader.semiTransparent:not(.osdHeader),
+.skinHeader-blurred:not(.osdHeader) {
+  background: linear-gradient(
+    to bottom,
+    rgba(23, 19, 38, 0.92),
+    rgba(15, 12, 26, 0.85)
+  ) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.4) !important;
+  backdrop-filter: blur(16px) saturate(1.4) !important;
+}
+
+/* 播放器 OSD 顶栏：保持 Jellyfin 原始样式（渐变遮罩、无 blur） */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* 顶栏按钮（排除用户头像按钮：
+   头像的 background-image 由行内样式设置，background 简写悬停会把它抹掉，
+   导致头像悬停时变白/显示默认符号） */
+.skinHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader .emby-button {
+  color: var(--lin-text-secondary);
+}
+
+.skinHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader .emby-button:hover {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+.skinHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound):active,
+.skinHeader .emby-button:active {
+  color: var(--lin-text);
+  background: var(--lin-bg-active);
+}
+
+.pageTitleWithDefaultLogo {
+  filter: brightness(1.2) contrast(1.05);
+}
+
+/* ==========================================================================
+   5. 侧边栏 / 抽屉（Linear 风格导航）
+   ========================================================================== */
+#mainDrawer,
+.mainDrawer {
+  background: var(--lin-bg) !important;
+  /* 用 box-shadow 代替 border-right，不改变抽屉原始宽度 */
+  box-shadow: 1px 0 0 var(--lin-border);
+  color: var(--lin-text-secondary);
+}
+
+/* 新版 React / MUI 抽屉（实验界面 / 部分页面） */
+.MuiDrawer-paper {
+  background-color: var(--lin-bg) !important;
+  box-shadow: 1px 0 0 var(--lin-border) !important;
+  color: var(--lin-text-secondary);
+}
+
+.mainDrawer-scrollContainer {
+  background: transparent;
+}
+
+.sidebarHeader {
+  color: var(--lin-text-tertiary) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: none !important;
+}
+
+.sidebarHeader:not(:first-child) {
+  margin-top: 10px;
+}
+
+
+/* 经典导航项：只加圆角与配色，不改变原尺寸 */
+.navMenuOption {
+  position: relative;
+  color: var(--lin-text-secondary) !important;
+  font-weight: 450;
+  border-radius: var(--lin-radius) !important;
+  border: 1px solid transparent !important;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.navMenuOption:hover {
+  color: var(--lin-text) !important;
+  background: var(--lin-bg-hover) !important;
+}
+
+.navMenuOption:active {
+  background: var(--lin-bg-active) !important;
+}
+
+.navMenuOption-selected {
+  color: var(--lin-text) !important;
+  background: var(--lin-bg-selected) !important;
+  font-weight: 500;
+  box-shadow:
+    inset 2px 0 0 var(--lin-accent),
+    inset 0 0 0 1px rgba(139, 92, 246, 0.28),
+    0 0 14px rgba(139, 92, 246, 0.1);
+}
+
+.navMenuOption-selected .navMenuOptionIcon,
+.navMenuOption-selected .navMenuOptionText {
+  color: var(--lin-text) !important;
+}
+
+.navMenuOptionIcon {
+  color: var(--lin-text-tertiary) !important;
+}
+
+.navMenuOption-selected .navMenuOptionIcon {
+  color: var(--lin-accent) !important;
+}
+
+.navMenuOptionText {
+  font-weight: inherit;
+}
+
+.navMenuOptionBadge {
+  background: var(--lin-accent) !important;
+  border-radius: 999px !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 2px var(--lin-bg);
+}
+
+/* MUI 导航项（ListItemButton）：只加圆角与配色，不改变原尺寸 */
+.MuiListItemButton-root {
+  border-radius: var(--lin-radius) !important;
+  color: var(--lin-text-secondary) !important;
+}
+
+.MuiListItemButton-root:hover {
+  background: var(--lin-bg-hover) !important;
+  color: var(--lin-text) !important;
+}
+
+.MuiListItemButton-root.Mui-selected,
+.MuiListItemButton-root.Mui-selected:hover {
+  background: var(--lin-bg-selected) !important;
+  color: var(--lin-text) !important;
+  box-shadow: inset 0 0 0 1px var(--lin-border);
+}
+
+.MuiListItemIcon-root {
+  color: var(--lin-text-tertiary) !important;
+}
+
+.Mui-selected .MuiListItemIcon-root {
+  color: var(--lin-accent) !important;
+}
+
+.MuiListItemText-primary {
+  color: inherit !important;
+  font-weight: 450;
+}
+
+.MuiListSubheader-root,
+.sidebarHeader {
+  color: var(--lin-text-tertiary) !important;
+}
+
+.MuiDivider-root {
+  border-color: var(--lin-border) !important;
+}
+
+/* 抽屉底部（服务器信息等） */
+.sidebarFooter {
+  color: var(--lin-text-tertiary);
+  border-top: 1px solid var(--lin-border);
+  font-size: 11px;
+  padding: 12px 20px;
+}
+
+/* 打开抽屉时的遮罩 */
+.tmla-mask.backdrop {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* ==========================================================================
+   6. 区块标题
+   ========================================================================== */
+.sectionTitleContainer {
+  margin-bottom: 2px;
+}
+
+.sectionTitle,
+.sectionTitleText {
+  color: var(--lin-text) !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.sectionTitleButton {
+  color: var(--lin-text-secondary);
+}
+
+.sectionTitleButton:hover {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover) !important;
+}
+
+.sectionTitleButton:active {
+  background: var(--lin-bg-active) !important;
+}
+
+/* ==========================================================================
+   7. 卡片（海报 / 剧集卡片，Linear 极简风格）
+   ========================================================================== */
+
+.cardBox {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: var(--lin-radius-lg);
+  transition: transform 0.2s ease;
+}
+
+/* 图片区域 */
+.cardScalable {
+  position: relative;
+  border-radius: var(--lin-radius-lg);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardImageContainer,
+.chapterCardImageContainer {
+  /* 底色透明：避免圆角处露出深色占位底形成黑边；
+     图片由懒加载器以行内 background-image 设在本元素上，
+     用 background 简写 !important 会覆盖并导致图片不显示 */
+  background-color: transparent !important;
+  border-radius: var(--lin-radius-lg);
+  overflow: hidden;
+}
+
+.cardImage {
+  /* 基础态过渡 = 离开悬停时生效：QQ 弹回弹（y>1 过冲） */
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease, box-shadow 0.3s ease;
+  border-radius: var(--lin-radius-lg);
+  /* 纤细描边画在图片自身：随图片 transform 同步放大缩小，
+     比画在卡片框上更贴图、更淡 */
+  box-shadow: inset 0 0 0 1px rgba(163, 142, 255, 0.25);
+}
+
+/* 首页海报等旧版卡片：图片为 background-image 设在 .cardImageContainer 上，
+   同样应用弹性过渡（否则首页没有 .cardImage 元素，效果不生效） */
+.cardImageContainer {
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px rgba(163, 142, 255, 0.25);
+}
+
+/* 剧集列表（每集）缩略图：圆角矩形 */
+.listItemImage {
+  border-radius: var(--lin-radius-lg);
+}
+
+.cardPadder {
+  background-color: var(--lin-bg-elevated) !important;
+}
+
+.defaultCardBackground,
+.cardContent:not(.defaultCardBackground) {
+  background-color: var(--lin-bg-elevated) !important;
+}
+
+/* 悬停态：紫光描边 + 图片轻微放大（无流光） */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    /* 外发光（在卡片外，可见） */
+    box-shadow: 0 8px 24px rgba(64, 40, 150, 0.28);
+  }
+
+  /* 悬停：图片描边随图片放大，并变紫加深（描边在图片自身，随动效同步缩放） */
+  .card:hover .cardImage,
+  .card:hover .cardImageContainer {
+    /* 进入悬停时：平滑放大（过渡覆盖为顺滑曲线）；
+       移开时走基础态的弹性过渡，QQ 弹回弹 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease, box-shadow 0.3s ease;
+    transform: scale(1.12);
+    filter: brightness(1.05);
+    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.45);
+  }
+
+  .card:hover .cardBox {
+    transform: translateY(-2px);
+  }
+
+  .card:active .cardBox {
+    transform: translateY(0);
+  }
+}
+
+/* 卡片文字 */
+.cardText {
+  color: var(--lin-text);
+  font-size: 13.5px;
+  font-weight: 450;
+  line-height: 1.35;
+}
+
+.cardText-first {
+  margin-top: 8px;
+}
+
+.cardText-secondary {
+  color: var(--lin-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.cardText-secondary:not(:first-child) {
+  margin-top: 2px;
+}
+
+/* 悬停播放按钮（Fab · 磨砂） */
+.cardOverlayFab {
+  background: rgba(16, 13, 26, 0.72) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cardOverlayFab:hover {
+  background: linear-gradient(180deg, var(--lin-accent-hover), var(--lin-accent)) !important;
+  color: #fff !important;
+  transform: scale(1.12);
+  box-shadow: 0 0 16px var(--lin-accent-glow);
+}
+
+/* 按下（active）：明显回缩，触感反馈 */
+.cardOverlayFab:active {
+  transform: scale(0.85) !important;
+  box-shadow: 0 0 24px var(--lin-accent-glow) !important;
+}
+
+.cardOverlayFab i {
+  color: inherit;
+}
+
+/* 卡片进度条（紫色渐变） */
+.itemProgressBar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px;
+  height: 3px !important;
+  overflow: hidden;
+}
+
+.itemProgressBarForeground {
+  background: linear-gradient(90deg, var(--lin-highlight), var(--lin-accent)) !important;
+  border-radius: 2px;
+  height: 3px !important;
+}
+
+/* 卡片角标（未读数 / 已播放等；保持原尺寸，仅换配色） */
+.countIndicator,
+.playedIndicator,
+.syncIndicator,
+.videoIndicator {
+  background: rgba(18, 15, 30, 0.85) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--lin-border-strong);
+  border-radius: var(--lin-radius) !important;
+  color: var(--lin-text) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--lin-shadow-sm);
+}
+
+.playedIndicator {
+  color: var(--lin-highlight) !important;
+  border-color: var(--lin-accent);
+}
+
+.timerIndicator {
+  color: var(--lin-danger) !important;
+}
+
+.unairedIndicator {
+  background: var(--lin-accent) !important;
+  color: #fff !important;
+  border-radius: var(--lin-radius) !important;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+}
+
+.missingIndicator {
+  background: var(--lin-danger) !important;
+  color: #fff !important;
+  border-radius: var(--lin-radius) !important;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+}
+
+/* 进度环 */
+.progressring-bg {
+  background: rgba(18, 15, 30, 0.9) !important;
+  border-color: rgba(18, 15, 30, 0.9) !important;
+}
+
+.progressring-text {
+  color: var(--lin-text) !important;
+  font-weight: 500;
+}
+
+/* 收藏心形等指示 */
+.indicators .material-icons {
+  font-size: 18px;
+}
+
+/* ==========================================================================
+   8. 按钮（Linear 风格）
+   ========================================================================== */
+.emby-button {
+  color: var(--lin-text-secondary);
+  font-family: var(--lin-font);
+  font-weight: 500;
+  border-radius: var(--lin-radius);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.emby-button:hover:not(:disabled) {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+.emby-button:active:not(:disabled) {
+  background: var(--lin-bg-active);
+}
+
+/* 主色实心按钮（紫罗兰渐变） */
+.button-submit.raised,
+.button-submit {
+  background: linear-gradient(180deg, var(--lin-accent-hover), var(--lin-accent)) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--lin-radius);
+  box-shadow: 0 1px 2px rgba(12, 8, 24, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  font-weight: 500;
+  padding: 0.5em 1.1em;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.button-submit.raised:hover:not(:disabled),
+.button-submit:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--lin-highlight), var(--lin-accent-hover)) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted), 0 2px 8px rgba(76, 49, 160, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+.button-submit.raised:active:not(:disabled),
+.button-submit:active:not(:disabled) {
+  background: var(--lin-accent-active) !important;
+  transform: translateY(0);
+}
+
+/* 次级实心按钮（暗紫面） */
+.raised {
+  background: linear-gradient(180deg, #1D1930, #171428) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius);
+  box-shadow: none !important;
+  font-weight: 500;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.raised:hover:not(:disabled) {
+  background: linear-gradient(180deg, #231E38, #1C1830) !important;
+  border-color: rgba(163, 142, 255, 0.32) !important;
+  transform: translateY(-1px);
+}
+
+.raised:active:not(:disabled) {
+  background: #141124 !important;
+  transform: translateY(0);
+}
+
+/* 幽灵按钮 */
+.button-flat {
+  color: var(--lin-text-secondary);
+  border-radius: var(--lin-radius);
+}
+
+.button-flat:hover:not(:disabled) {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+/* 链接按钮 */
+.button-link {
+  color: var(--lin-highlight);
+  font-weight: 500;
+}
+
+.button-link:hover {
+  color: var(--lin-accent-hover);
+  background: transparent;
+}
+
+/* 圆形图标按钮（排除用户头像按钮：background 简写会抹掉头像行内背景图） */
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--lin-text-secondary);
+  border-radius: var(--lin-radius);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):hover:not(:disabled) {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):active:not(:disabled),
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound).show-focus:focus {
+  color: var(--lin-text);
+  background: var(--lin-bg-active);
+}
+
+/* 浮动操作按钮（紫罗兰渐变） */
+.fab {
+  background: linear-gradient(180deg, var(--lin-accent-hover), var(--lin-accent)) !important;
+  color: #fff !important;
+  border-radius: var(--lin-radius-lg) !important;
+  box-shadow: 0 4px 16px rgba(76, 49, 160, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  font-family: var(--lin-font);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.fab:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--lin-highlight), var(--lin-accent-hover)) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted), 0 6px 20px rgba(76, 49, 160, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+.fab:active:not(:disabled) {
+  background: var(--lin-accent-active) !important;
+  transform: translateY(0);
+}
+
+/* 危险按钮 */
+.button-delete,
+.danger {
+  color: var(--lin-danger);
+}
+
+.button-delete:hover:not(:disabled) {
+  background: rgba(242, 72, 34, 0.12);
+  color: #FF7A5C;
+}
+
+/* ==========================================================================
+   9. 表单控件
+   ========================================================================== */
+.emby-input,
+.emby-select,
+.emby-textarea,
+.select,
+input[type='text'],
+input[type='search'],
+input[type='password'],
+input[type='number'],
+input[type='email'],
+input[type='url'],
+textarea {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-input) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font);
+  box-shadow: none !important;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.emby-input:focus,
+.emby-select:focus,
+.emby-textarea:focus,
+.select:focus,
+input:focus,
+textarea:focus {
+  border-color: var(--lin-accent) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted) !important;
+  outline: none !important;
+}
+
+.emby-input::placeholder,
+.emby-textarea::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--lin-text-tertiary);
+}
+
+/* 下拉箭头 */
+.emby-select-withcolor {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239C9DA3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-position: right 10px center !important;
+  background-repeat: no-repeat !important;
+  padding-right: 32px !important;
+}
+
+/* 标签 */
+.label,
+.fieldDescription,
+.checkboxLabel,
+.radioLabel,
+.toggleLabel {
+  color: var(--lin-text-secondary);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+/* 复选框 */
+.checkboxOutline {
+  border-color: var(--lin-border-strong) !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+}
+
+.checkboxOutline:hover {
+  border-color: var(--lin-text-tertiary) !important;
+}
+
+.checkbox:checked + .checkboxOutline {
+  background: var(--lin-accent) !important;
+  border-color: var(--lin-accent) !important;
+}
+
+.checkbox:checked + .checkboxOutline::after {
+  color: #fff !important;
+  font-weight: 700;
+}
+
+/* 单选框 */
+.radioOutline {
+  border-color: var(--lin-border-strong) !important;
+  background: transparent !important;
+}
+
+.radio:checked + .radioOutline {
+  border-color: var(--lin-accent) !important;
+  border-width: 2px !important;
+  background: var(--lin-bg-overlay) !important;
+}
+
+.radio:checked + .radioOutline::after {
+  background: var(--lin-accent) !important;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 2px;
+}
+
+/* 开关 */
+.toggleOutline {
+  background: #3A3B40 !important;
+  border: none !important;
+  transition: background 0.15s ease;
+}
+
+.toggleOutline::before {
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.toggle:checked + .toggleOutline {
+  background: var(--lin-accent) !important;
+}
+
+/* 滑块：保持 Jellyfin 原版结构与尺寸，只换配色
+   说明：可见轨道由 .mdl-slider-background-flex 元素绘制（原生轨道透明），
+   原点 1.08em 由原版 150% 输入框高度保证居中——
+   不要给原生轨道设高度/背景，也不要改原点尺寸，否则原点会不居中 */
+.mdl-slider-background-flex {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.mdl-slider-background-lower {
+  background-color: var(--lin-accent) !important;
+}
+
+.mdl-slider::-webkit-slider-thumb,
+input[type='range'].emby-slider::-webkit-slider-thumb {
+  background: var(--lin-text) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+  /* 不覆盖 width/height/margin —— 原版 1.08em 自带居中 */
+}
+
+.mdl-slider::-moz-range-thumb,
+input[type='range'].emby-slider::-moz-range-thumb {
+  background: var(--lin-text) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ==========================================================================
+   10. 横向滚动区 / 滚动按钮
+   ========================================================================== */
+.emby-scroller {
+  scrollbar-width: thin;
+}
+
+.emby-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.emby-scroller::-webkit-scrollbar-thumb {
+  border-width: 0;
+}
+
+/* 滚动箭头按钮 */
+.emby-scrollbuttons-button {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius-lg) !important;
+  box-shadow: var(--lin-shadow-sm) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.emby-scrollbuttons-button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.emby-scrollbuttons-button:active {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* ==========================================================================
+   11. 对话框 / 弹窗 / 操作菜单
+   --------------------------------------------------------------------------
+   只补圆角与配色，不改变原尺寸（移除 padding/max-width 等覆写）
+   ========================================================================== */
+.dialog,
+.dialog.animated-dialog,
+.formDialog {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text);
+  border: 1px solid var(--lin-border-strong);
+  border-radius: var(--lin-radius-xl) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+}
+
+.dialog-backdrop {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.formDialogHeader {
+  background: transparent !important;
+  color: var(--lin-text);
+}
+
+.formDialogHeaderTitle {
+  font-weight: 600 !important;
+}
+
+.formDialogFooter {
+  background: transparent !important;
+}
+
+
+/* 操作菜单 / ActionSheet */
+.actionSheet {
+  background: var(--lin-bg-overlay) !important;
+  border: 1px solid var(--lin-border-strong);
+  border-radius: var(--lin-radius-lg) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+}
+
+.actionSheetMenuItem {
+  color: var(--lin-text-secondary);
+  border-radius: var(--lin-radius) !important;
+}
+
+.actionSheetMenuItem:hover {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+.actionSheetMenuItem:active,
+.actionSheetMenuItem.show-focus:focus {
+  background: var(--lin-bg-active);
+  color: var(--lin-text);
+}
+
+/* 列表对话框 */
+.paperList {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.listItem {
+  color: var(--lin-text);
+  border-bottom: 1px solid var(--lin-border);
+  border-radius: var(--lin-radius);
+  transition: background 0.12s ease;
+}
+
+.listItem:hover {
+  background: var(--lin-bg-hover);
+}
+
+.listItem:focus,
+.listItem.show-focus:focus {
+  background: var(--lin-bg-active);
+}
+
+.listItemBody {
+  color: var(--lin-text);
+}
+
+.listItemBody .secondary {
+  color: var(--lin-text-secondary);
+}
+
+/* ==========================================================================
+   12. 详情页
+   ========================================================================== */
+.detailPageWrapperContainer {
+  background: transparent;
+}
+
+.detailRibbon {
+  background: transparent !important;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(10, 9, 18, 0.85) 0%,
+    rgba(12, 9, 24, 0.45) 45%,
+    rgba(10, 9, 18, 0) 100%
+  ) !important;
+}
+
+.itemBackdrop {
+  filter: brightness(0.75) saturate(1.05);
+}
+
+.detailPagePrimaryContainer {
+  color: var(--lin-text);
+}
+
+.itemName {
+  color: var(--lin-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+
+.parentName {
+  color: var(--lin-text-secondary) !important;
+}
+
+.itemDetails,
+.misctext {
+  color: var(--lin-text-secondary);
+}
+
+.itemDetailPage .button-flat,
+.detailButtonContainer .button-flat {
+  color: var(--lin-text-secondary);
+}
+
+.itemDetailPage .button-flat:hover {
+  color: var(--lin-text);
+  background: var(--lin-bg-hover);
+}
+
+/* 详情页章节标题 */
+.detailSectionTitle {
+  color: var(--lin-text) !important;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   13. 列表视图
+   ========================================================================== */
+
+.listView .listItem {
+  background: transparent;
+}
+
+.listView .listItem:hover {
+  background: var(--lin-bg-hover);
+}
+
+/* ==========================================================================
+   14. 正在播放栏 Now Playing Bar
+   ========================================================================== */
+.nowPlayingBar {
+  background: linear-gradient(to top, rgba(20, 16, 32, 0.94), rgba(15, 12, 24, 0.9)) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  color: var(--lin-text);
+}
+
+.nowPlayingBarTop {
+  background: linear-gradient(90deg, transparent, var(--lin-accent), transparent) !important;
+}
+
+.nowPlayingBarText,
+.nowPlayingBarTitle,
+.nowPlayingBarSubTitle {
+  color: var(--lin-text) !important;
+}
+
+.nowPlayingBarSubTitle {
+  color: var(--lin-text-secondary) !important;
+}
+
+.nowPlayingBar .mediaButton {
+  color: var(--lin-text-secondary) !important;
+}
+
+.nowPlayingBar .mediaButton:hover {
+  color: var(--lin-text) !important;
+  background: var(--lin-bg-hover) !important;
+}
+
+.nowPlayingBar .playPauseButton {
+  color: var(--lin-text) !important;
+}
+
+.nowPlayingBar .playPauseButton:hover {
+  background: var(--lin-bg-active) !important;
+}
+
+/* 进度条（emby-slider 原版结构，尺寸由 mdl-slider 规则保证居中，只换配色） */
+.nowPlayingBarPositionSlider::-webkit-slider-thumb {
+  background: var(--lin-accent) !important;
+}
+
+/* ==========================================================================
+   15. 移动端底部导航
+   ========================================================================== */
+.appfooter {
+  background: linear-gradient(to top, rgba(22, 18, 34, 0.94), rgba(17, 14, 27, 0.9)) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+
+.appfooter .emby-button {
+  color: var(--lin-text-secondary);
+}
+
+.appfooter .emby-button:hover,
+.appfooter .emby-button.show-focus:focus {
+  color: var(--lin-text);
+}
+
+.appfooter .emby-button.active {
+  color: var(--lin-accent) !important;
+}
+
+/* ==========================================================================
+   16. 其他组件
+   ========================================================================== */
+/* Toast 提示 */
+.toast {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong);
+  border-radius: var(--lin-radius-lg) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+}
+
+/* 标签页 Tabs（只改配色，保持原尺寸） */
+.emby-tab-button {
+  color: var(--lin-text-secondary) !important;
+  font-weight: 500;
+  border-radius: var(--lin-radius) var(--lin-radius) 0 0;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.emby-tab-button:hover {
+  color: var(--lin-text) !important;
+  background: var(--lin-bg-hover);
+}
+
+.emby-tab-button-selected {
+  color: var(--lin-text) !important;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--lin-accent);
+}
+
+/* 加载圈 */
+.paper-spinner {
+  color: var(--lin-accent);
+}
+
+/* 链接卡片（首页图书馆入口） */
+.homeLibraryButton {
+  background-color: var(--lin-bg-overlay) !important;
+  border: 1px solid var(--lin-border) !important;
+  border-radius: var(--lin-radius-lg) !important;
+  color: var(--lin-text) !important;
+  box-shadow: none !important;
+  font-weight: 500;
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+
+.homeLibraryButton:hover {
+  background: var(--lin-bg-hover) !important;
+  border-color: var(--lin-border-strong) !important;
+  transform: translateY(-1px);
+}
+
+.homeLibraryButton .homeLibraryIcon {
+  color: var(--lin-accent) !important;
+}
+
+/* ==========================================================================
+   ==========================================================================
+   17. ★ Media Bar 插件 完整兼容区 ★
+   --------------------------------------------------------------------------
+   覆盖以下插件（共用同一套 .featured-content DOM 结构）：
+     · IAmParadox27/jellyfin-plugin-media-bar（10.11 分支）
+     · MakD/Jellyfin-Media-Bar（slideshowpure 自定义代码版）
+     · CodeDevMLH/jellyfin-plugin-media-bar-enhanced（含 .media-bar-* 设置弹窗）
+   --------------------------------------------------------------------------
+   说明：插件自身的 CSS 由插件注入，为保证本主题始终生效，
+   本区规则统一使用高优先级选择器 + !important。
+   ========================================================================== */
+
+/* ---- 17.1 字体与文本基线 ---- */
+.featured-content,
+.featured-content * {
+  font-family: var(--lin-font) !important;
+}
+
+/* ---- 17.2 加载屏（bar-loading） ---- */
+.bar-loading {
+  background-color: var(--lin-bg) !important;
+}
+
+.bar-loading .splashLogo {
+  filter: brightness(1.1);
+}
+
+.bar-loading h1 div {
+  filter: brightness(1.15);
+}
+
+/* 加载进度条（保持插件原始尺寸，仅换配色） */
+.progress-container {
+  border-radius: 2px;
+  overflow: visible;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--lin-highlight), var(--lin-accent)) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 12px var(--lin-accent-glow);
+}
+
+
+.unfilled-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+}
+
+/* ---- 17.3 主容器（保持插件默认几何，无覆写）---- */
+
+/* ---- 17.4 背景与遮罩 ---- */
+.backdrop {
+  border-radius: 0 !important;
+  object-position: center 20% !important;
+}
+
+/* 不做任何滤镜/遮罩效果：画面完全原色 */
+.backdrop.low-quality {
+  filter: none;
+}
+
+.backdrop.high-quality {
+  filter: none;
+}
+
+.backdrop.animate,
+.logo.animate {
+  animation-duration: 0.9s !important;
+}
+
+/* 卡片左侧黑色遮罩：黑 → 透明的渐变过渡（沿用插件 gradient-overlay 元素） */
+.gradient-overlay {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.45) 30%,
+    rgba(0, 0, 0, 0) 65%
+  ) !important;
+}
+
+/* 去掉统一暗化遮罩：画面完全原色 */
+.backdrop-overlay {
+  background: transparent !important;
+}
+
+/* ---- 17.5 标题 Logo ---- */
+/* LOGO 上移 2cm（插件原版 top 为 15vh） */
+.logo-container {
+  top: calc(15vh - 2cm) !important;
+}
+
+/* 所有 LOGO 状态：无阴影，仅保留亮度（低清态保留轻微模糊） */
+.logo {
+  filter: brightness(1.25);
+}
+
+.logo.low-quality {
+  filter: brightness(1.1) blur(0.5px);
+}
+
+.logo.high-quality {
+  filter: brightness(1.3) blur(0);
+}
+
+.logo-title-fallback {
+  color: var(--lin-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+
+/* ---- 17.6 信息区 ----
+   间距/字号/字重等上下左右调整全部回滚，仅保留主题配色 */
+.info-container,
+.misc-info,
+.genre,
+.date,
+.runTime,
+.plot,
+.plot-container {
+  color: var(--lin-text) !important;
+}
+
+.misc-info {
+  color: rgba(237, 237, 240, 0.82) !important;
+}
+
+.genre {
+  color: rgba(237, 237, 240, 0.85) !important;
+}
+
+.date,
+.runTime {
+  color: rgba(237, 237, 240, 0.75) !important;
+}
+
+.separator-icon {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* 分级标签：中性毛玻璃胶囊 */
+.age-rating {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
+  padding: 1px 7px !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* 评分 */
+.community-rating-star {
+  color: var(--lin-accent-hover) !important;
+  font-size: 1.3em !important;
+}
+
+.star-rating-container {
+  gap: 2px !important;
+}
+
+.critic-rating {
+  font-weight: 500 !important;
+}
+
+/* 剧情简介 */
+.plot-container {
+  text-align: left !important;
+}
+
+.plot {
+  color: rgba(237, 237, 240, 0.78) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  font-weight: 400 !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  max-width: 560px;
+}
+
+.constrained-plot {
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+/* ---- 17.7 操作按钮 ----
+   保持插件原始尺寸（font-size / padding / 圆角均由插件决定），
+   仅替换配色为暗紫风格 */
+.button-container {
+  gap: 10px !important;
+}
+
+/* 播放按钮：紫罗兰渐变主按钮（尺寸保持插件默认） */
+.play-button {
+  background: linear-gradient(180deg, var(--lin-accent-hover), var(--lin-accent)) !important;
+  color: #fff !important;
+  border: none !important;
+  font-family: var(--lin-font) !important;
+  box-shadow: 0 2px 12px rgba(76, 49, 160, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.play-button::before {
+  font-weight: 500 !important;
+}
+
+.play-button:hover {
+  background: linear-gradient(180deg, var(--lin-highlight), var(--lin-accent-hover)) !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted), 0 4px 18px rgba(76, 49, 160, 0.55) !important;
+  transform: translateY(-1px);
+}
+
+.play-button:active {
+  background: var(--lin-accent-active) !important;
+  transform: translateY(0);
+}
+
+/* 详情按钮：保持插件 50px 圆形，仅换配色为暗紫磨砂 */
+.detail-button {
+  background: rgba(24, 19, 40, 0.55) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid rgba(163, 142, 255, 0.2) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.detail-button:hover {
+  background: rgba(139, 92, 246, 0.22) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  box-shadow: 0 0 12px var(--lin-accent-glow);
+  opacity: 1 !important;
+}
+
+/* 收藏按钮：保持插件 50px 圆形，仅换配色为暗紫磨砂 */
+.favorite-button {
+  background: rgba(24, 19, 40, 0.55) !important;
+  color: rgba(237, 235, 246, 0.7) !important;
+  border: 1px solid rgba(163, 142, 255, 0.2) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.favorite-button:hover {
+  background: rgba(139, 92, 246, 0.22) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  box-shadow: 0 0 12px var(--lin-accent-glow);
+  opacity: 1 !important;
+}
+
+.favorite-button.favorited {
+  color: var(--lin-danger) !important;
+  border-color: rgba(242, 72, 34, 0.4) !important;
+}
+
+/* 播放/暂停/音量等浮动控件 */
+.pause-button,
+.volume-toggle {
+  color: rgba(237, 237, 240, 0.8) !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.15s ease, color 0.15s ease !important;
+}
+
+.pause-button:hover,
+.volume-toggle:hover {
+  opacity: 1 !important;
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+/* ---- 17.8 指示点 Dots ---- */
+.dot {
+  width: 5px !important;
+  height: 5px !important;
+  margin: 0 4px !important;
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease;
+}
+
+.dot:hover {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dot.active {
+  background-color: var(--lin-accent) !important;
+  transform: scale(1.8) !important;
+  box-shadow: 0 0 10px var(--lin-accent-glow);
+  animation: lin-dot-pulse 2.6s ease-in-out infinite;
+}
+
+/* ---- 17.9 左右箭头（保持插件原尺寸与位置，仅调配色） ---- */
+.arrow {
+  color: var(--lin-text) !important;
+  transition: color 0.12s ease, opacity 0.12s ease;
+}
+
+.arrow:hover {
+  color: var(--lin-accent-hover) !important;
+  opacity: 0.9;
+}
+
+.arrow:active {
+  opacity: 0.7;
+}
+
+.left-arrow {
+  left: 16px !important;
+}
+
+.right-arrow {
+  right: 16px !important;
+}
+
+/* ---- 17.10 视频背景模式 ---- */
+.video-player iframe {
+  border-radius: 0 !important;
+}
+
+.headerVideo {
+  filter: brightness(0.9);
+}
+
+/* ---- 17.11 自定义叠加内容（enhanced 版） ---- */
+.custom-overlay-container {
+  border-radius: var(--lin-radius-lg);
+  overflow: hidden;
+}
+
+.custom-overlay-image {
+  border-radius: var(--lin-radius-lg);
+}
+
+.custom-overlay-text {
+  color: var(--lin-text) !important;
+  font-family: var(--lin-font) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- 17.12 增强版 Media Bar 设置弹窗 ---- */
+.media-bar-modal-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.media-bar-modal {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius-xl) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+}
+
+.media-bar-settings-body {
+  color: var(--lin-text-secondary) !important;
+}
+
+.media-bar-settings-backdrop {
+  background: var(--lin-bg) !important;
+}
+
+/* 弹窗内按钮（保持插件原尺寸，仅换配色） */
+.media-bar-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+  transition: background 0.12s ease;
+}
+
+.media-bar-btn:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.media-bar-btn-submit {
+  background: var(--lin-accent) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.media-bar-btn-submit:hover {
+  background: var(--lin-accent-hover) !important;
+}
+
+.media-bar-btn-cancel {
+  background: transparent !important;
+  color: var(--lin-text-secondary) !important;
+}
+
+.media-bar-btn-cancel:hover {
+  background: var(--lin-bg-hover) !important;
+  color: var(--lin-text) !important;
+}
+
+/* 弹窗内下拉框（保持插件原尺寸，仅换配色） */
+.media-bar-select-container {
+  background: var(--lin-bg) !important;
+  border: 1px solid var(--lin-border-input) !important;
+  border-radius: var(--lin-radius) !important;
+}
+
+.media-bar-select-label {
+  color: var(--lin-text) !important;
+  font-weight: 500 !important;
+}
+
+.media-bar-select-info,
+.media-bar-select-desc {
+  color: var(--lin-text-secondary) !important;
+  font-size: 12.5px !important;
+}
+
+.media-bar-select {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-input) !important;
+  border-radius: var(--lin-radius) !important;
+}
+
+/* 弹窗内进度条（自定义内容加载） */
+.media-bar-progress-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+}
+
+.media-bar-progress-fill {
+  background: var(--lin-accent) !important;
+  border-radius: 2px !important;
+}
+
+/* 弹窗 Tab */
+.media-bar-client-tabs {
+  border-bottom: 1px solid var(--lin-border) !important;
+}
+
+.media-bar-client-tab {
+  color: var(--lin-text-secondary) !important;
+  border-radius: var(--lin-radius) var(--lin-radius) 0 0 !important;
+  font-weight: 500 !important;
+  transition: color 0.12s ease;
+}
+
+.media-bar-client-tab:hover {
+  color: var(--lin-text) !important;
+}
+
+.media-bar-client-tab.active,
+.media-bar-client-tab[aria-selected='true'] {
+  color: var(--lin-text) !important;
+  box-shadow: inset 0 -2px 0 var(--lin-accent);
+}
+
+.media-bar-dropdown {
+  background: var(--lin-bg-overlay) !important;
+  color: var(--lin-text) !important;
+  border: 1px solid var(--lin-border-input) !important;
+  border-radius: var(--lin-radius) !important;
+}
+
+.media-bar-has-counter {
+  border-radius: var(--lin-radius) !important;
+}
+
+.media-bar-github-link {
+  color: var(--lin-highlight) !important;
+}
+
+/* MUI 弹窗（enhanced 版使用） */
+.MuiDialog-paper {
+  background-color: var(--lin-bg-overlay) !important;
+  background-image: none !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius-xl) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+  color: var(--lin-text) !important;
+}
+
+.MuiDialog-paper .MuiTypography-root,
+.MuiDialog-paper .MuiListItemText-root {
+  color: var(--lin-text) !important;
+}
+
+.MuiDialog-paper .MuiListItemText-secondary {
+  color: var(--lin-text-secondary) !important;
+}
+
+.MuiDialog-paper .MuiButton-root {
+  text-transform: none !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary {
+  background-color: var(--lin-accent) !important;
+  color: #fff !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary:hover {
+  background-color: var(--lin-accent-hover) !important;
+}
+
+.MuiDialog-paper .MuiButton-text {
+  color: var(--lin-text-secondary) !important;
+}
+
+/* ---- 17.13 焦点 / TV 遥控器模式 ---- */
+.featured-content .show-focus:focus,
+.featured-content.is-tv-focused .backdrop-container {
+  outline: 2px solid var(--lin-accent) !important;
+  outline-offset: -2px;
+}
+
+.featured-content.is-focused .backdrop-container {
+  transition: transform 0.3s ease;
+}
+
+.featured-content.is-videoplayer .backdrop {
+  filter: brightness(0.85);
+}
+
+/* ---- 17.14 移动端适配（只调整可读性，不改按钮尺寸） ---- */
+@media only screen and (max-width: 767px) {
+  .plot {
+    font-size: 13px !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .age-rating {
+    font-size: 10px !important;
+  }
+}
+
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  .backdrop,
+  .backdrop.with-video {
+    /* 圆角框模式下不叠加 mask，交给 .slide 的 border-radius + overflow 裁剪 */
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  /* 与桌面一致：不叠加暗化遮罩 */
+  .gradient-overlay {
+    background: transparent !important;
+  }
+
+  .dot.active {
+    transform: scale(1.6) !important;
+  }
+}
+
+/* ---- 17.15 头图圆角矩形框（一套规则适配所有设备）----
+   --------------------------------------------------------------
+   1) #slides-container 绝对定位，所有尺寸顶边都在 y=0：
+      藏在磨砂固定顶栏后面（不依赖顶栏高度，任何设备无边缘冲突），
+      因此只保留底部圆角；
+   2) 宽度 = 视口宽 − 2×1cm（左右留白 1cm，不变），水平居中；
+   3) 高度 = 55vh：随设备屏幕长度尺寸缩放，不做手机/横竖屏适配；
+   4) 下方板块（.homeSectionsContainer）跟随卡片底部 + 1cm 间距；
+   5) 头图内部（logo/文字/按钮）完全使用插件原版布局。
+   -------------------------------------------------------------- */
+#slides-container {
+  position: absolute !important;
+  /* 顶距（与顶栏的间距）按之前的设置：
+     桌面窄屏 11.25em / 宽屏 7em（见下方媒体查询），手机 0（藏顶栏后） */
+  top: calc(11.25em + var(--lin-hero-margin, 16px)) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  /* 宽度 = 视口宽 − 2×1cm：左右留白恒为真实 1 厘米 */
+  width: calc(100vw - 2 * var(--lin-hero-side-margin, 0.5cm)) !important;
+  /* 高度 = 55vh：随设备屏幕长度尺寸缩短 */
+  height: 55vh !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: var(--lin-hero-radius, 16px) !important;
+  /* 无外投影，仅保留内侧 1px 细描边 */
+  box-shadow: inset 0 0 0 1px rgba(163, 142, 255, 0.1) !important;
+  /* 封入独立层叠上下文：整个头图（含内部 z-index ≤5 的元素）
+     永远低于顶栏（z-index 100000）与弹幕插件弹层 */
+  z-index: 5 !important;
+}
+
+/* 宽屏：顶距 7em（避开顶栏 + 标签行） */
+@media (min-width: 75em) {
+  #slides-container {
+    top: calc(7em + var(--lin-hero-margin, 16px)) !important;
+  }
+}
+
+/* 手机：卡片下移避开顶栏（顶栏 + 标签行约 6em，另加刘海安全区），四角圆角完整 */
+@media only screen and (max-width: 767px) {
+  #slides-container {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--lin-hero-margin, 16px) + 0.5cm) !important;
+    border-radius: var(--lin-hero-radius, 16px) !important;
+  }
+
+  /* ---- 手机版内容约束（仅此断点生效，不影响桌面/平板）----
+     内容全居中：LOGO 顶部居中，评分/类型/按钮/圆点水平居中、垂直均衡，
+     全部压进 55vh 卡片内（em 间距稳定，不随手机高度溢出） */
+  #slides-container .logo-container {
+    /* 插件原版是 position:relative，bottom 会把 LOGO 顶出卡片；
+       先强制 absolute 再底部锚定，让 LOGO 紧贴评分/类型文字块上方；
+       尺寸整体放大 1cm */
+    position: absolute !important;
+    top: auto !important;
+    bottom: 13em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(62% + 1cm) !important;
+    height: calc(18% + 1cm) !important;
+  }
+
+  #slides-container .info-container {
+    top: auto !important;
+    bottom: 9.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    justify-content: center !important;
+  }
+
+  #slides-container .runTime {
+    /* 手机端防折行：保持 "1 Season" 单行，数字不跑到 Season 上面 */
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+  }
+
+  #slides-container .genre {
+    top: auto !important;
+    bottom: 7.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .plot-container {
+    display: none !important;
+  }
+
+  #slides-container .button-container {
+    top: auto !important;
+    bottom: 1.5em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .dots-container {
+    /* 圆点放在按钮上方、评分/类型下方（5em+1cm 会压到类型行，下移到 4em+1cm） */
+    top: auto !important;
+    bottom: calc(3.8em + 1cm) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* ---- 板块跟随卡片底部（间距 = 底部留白 1cm）---- */
+#indexPage .homeSectionsContainer {
+  top: calc(11.25em + var(--lin-hero-margin, 16px) + 55vh + var(--lin-hero-bottom-margin, -1.5cm)) !important;
+}
+
+@media (min-width: 75em) {
+  #indexPage .homeSectionsContainer {
+    top: calc(7em + var(--lin-hero-margin, 16px) + 55vh + var(--lin-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  #indexPage .homeSectionsContainer {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--lin-hero-margin, 16px) + 0.5cm + 55vh + var(--lin-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+/* 让"卡片底部 → 我的媒体"的视觉间距恰好 = 底部留白 1cm：
+   抵消首页首个板块（我的媒体）自带的顶部内边距与标题边距
+   （.padded-top 1em + .sectionTitleContainer 1.25em ≈ 45px） */
+#indexPage .homeSectionsContainer > .verticalSection:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer-cards,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle-cards {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ---- 头图内部布局（logo / 文字 / 按钮 / 圆点）：不使用任何覆写，
+   完全采用插件原版设置 ---- */
+
+/* 头图不再做底部过渡虚化：卡片内画面干净、无淡出，
+   圆角边框直接收尾（底部不叠加任何 mask） */
+#slides-container .backdrop-container {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+#slides-container .backdrop {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* 视频模式：头图收窄为右侧 40% 并平滑淡出，避免硬边 */
+#slides-container .backdrop.with-video {
+  width: 40% !important;
+  mask-image: linear-gradient(
+    to right,
+    rgba(10, 9, 18, 1) 50%,
+    rgba(10, 9, 18, 0) 92%
+  ) !important;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(10, 9, 18, 1) 50%,
+    rgba(10, 9, 18, 0) 92%
+  ) !important;
+}
+
+#slides-container .backdrop-overlay,
+#slides-container .gradient-overlay {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* ==========================================================================
+   18. ★ jellyfin-danmaku 弹幕插件 兼容区 ★
+   --------------------------------------------------------------------------
+   插件：https://github.com/Izumiko/jellyfin-danmaku（油猴脚本 ede.user.js，
+   或 Nginx/Caddy 注入方式加载）
+   注入的元素：
+     · #danmakuWrapper   —— 弹幕画布层（fixed，pointer-events:none）
+     · #displayDanmaku   —— 播放器控制栏里的"弹幕开关"按钮
+     · #danmakuSidebar   —— 设置侧边栏（含 .danmaku-tab-*、设置卡片、滑块等）
+     · .dialogOverlay    —— 搜索/选择弹幕的对话框（.inputDialog/.selectDialog）
+   说明：插件自带样式使用 Jellyfin 默认蓝色并大量带 !important，
+   本区规则统一加 !important 覆盖为 Linear 风格。
+   ========================================================================== */
+
+/* ---- 18.1 播放器弹幕开关按钮 ---- */
+#displayDanmaku {
+  color: var(--lin-text-secondary) !important;
+}
+
+#displayDanmaku:hover {
+  color: var(--lin-text) !important;
+  background: var(--lin-bg-hover) !important;
+}
+
+#displayDanmaku .material-icons.comment {
+  color: var(--lin-accent) !important;
+}
+
+#displayDanmaku .material-icons.comments_disabled {
+  color: var(--lin-text-tertiary) !important;
+}
+
+/* ---- 18.2 弹幕画布层 ----
+   保持插件定位与尺寸；补一个 z-index 保证弹幕在视频、顶栏、
+   播放栏之上（弹幕层 pointer-events:none，不影响任何点击），
+   低于插件的侧边栏(1000000)/对话框(2000000) */
+#danmakuWrapper {
+  z-index: 300 !important;
+}
+
+/* ---- 18.3 设置侧边栏 ---- */
+.danmakuSidebar {
+  background: rgba(22, 18, 34, 0.96) !important;
+  /* 底色 0.96 近乎不透明，背后的 backdrop-filter 模糊完全不可见：
+     移除 blur 省掉整条侧栏的模糊纹理，视觉无差别 */
+  border-left: 1px solid var(--lin-border-strong) !important;
+  border-radius: 14px 0 0 14px !important;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5) !important;
+  font-family: var(--lin-font) !important;
+  color: var(--lin-text) !important;
+}
+
+.danmakuSidebarHeader {
+  border-bottom: 1px solid var(--lin-border) !important;
+}
+
+.danmakuSidebarTitle {
+  color: var(--lin-text) !important;
+  font-family: var(--lin-font) !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.danmakuSidebarSaveButton {
+  background: var(--lin-accent) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.danmakuSidebarSaveButton:hover {
+  background: var(--lin-accent-hover) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted) !important;
+  transform: translateY(-1px) !important;
+}
+
+.danmakuSidebarCancelButton {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  color: var(--lin-text) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+.danmakuSidebarCancelButton:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 侧边栏滚动条 */
+.danmakuSidebar .danmakuSettingsContainer::-webkit-scrollbar-thumb,
+.danmakuTabsContainer::-webkit-scrollbar-thumb {
+  background: #4A4466 !important;
+  border-radius: 4px !important;
+}
+
+.danmakuSidebar .danmakuSettingsContainer::-webkit-scrollbar-track,
+.danmakuTabsContainer::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* ---- 18.4 选项卡 ---- */
+.danmakuTabsContainer {
+  background: transparent !important;
+  border-bottom: 1px solid var(--lin-border) !important;
+}
+
+.danmaku-tab-button {
+  color: var(--lin-text-secondary) !important;
+  font-family: var(--lin-font) !important;
+  border-radius: var(--lin-radius) !important;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease !important;
+}
+
+.danmaku-tab-button.inactive {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  font-weight: 500 !important;
+}
+
+.danmaku-tab-button.inactive:hover {
+  background: var(--lin-bg-hover) !important;
+  border-color: var(--lin-border-strong) !important;
+  color: var(--lin-text) !important;
+}
+
+.danmaku-tab-button.active {
+  background: var(--lin-accent) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* ---- 18.5 滑块 / 数值标签 / 复选项 ----
+   弹幕设置里是普通 range 输入框（非 emby-slider）：
+   WebKit 下 14px 原点对 4px 轨道需要 margin-top 补偿才会居中 */
+.danmakuSidebar input[type='range'],
+.styledRange {
+  background: rgba(255, 255, 255, 0.14) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.danmakuSidebar input[type='range']::-webkit-slider-thumb,
+.styledRange::-webkit-slider-thumb {
+  background: var(--lin-accent) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-top: -5px !important; /* (4px 轨道 - 14px 原点) / 2，垂直居中 */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.danmakuSidebar input[type='range']::-moz-range-thumb,
+.styledRange::-moz-range-thumb {
+  background: var(--lin-accent) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 14px !important;
+  height: 14px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.danmakuSidebar input[type='range']::-webkit-slider-thumb:hover,
+.styledRange::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 4px var(--lin-accent-muted) !important;
+  transform: scale(1.05) !important;
+}
+
+.range-value-label {
+  color: var(--lin-accent-hover) !important;
+  background: var(--lin-accent-muted) !important;
+  border-color: rgba(94, 106, 210, 0.35) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+}
+
+/* 复选框 / 单选框（accent-color 轻量方案） */
+.danmakuSidebar input[type='checkbox'],
+.danmakuSidebar input[type='radio'] {
+  accent-color: var(--lin-accent) !important;
+}
+
+/* ---- 18.6 设置卡片 / 输入框 ---- */
+.danmakuSwitchCard,
+.logSwitchCard,
+.searchItemCard,
+.addSourceItemCard,
+.customCorsProxyCard,
+.settingItem {
+  background: rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  border: 1px solid var(--lin-border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  min-height: 56px !important;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease !important;
+}
+
+.danmakuSwitchCard:hover,
+.logSwitchCard:hover,
+.searchItemCard:hover,
+.addSourceItemCard:hover,
+.customCorsProxyCard:hover,
+.settingItem:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  border-color: var(--lin-border-strong) !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+}
+
+.controlCard {
+  overflow: hidden !important;
+}
+
+.controlCard::before {
+  background: linear-gradient(135deg, var(--lin-accent-muted), transparent) !important;
+}
+
+.controlTitle,
+.settingLabel {
+  color: var(--lin-text) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+.controlDescription {
+  color: var(--lin-text-secondary) !important;
+  font-family: var(--lin-font) !important;
+}
+
+.styledTextInput {
+  background: var(--lin-bg) !important;
+  border: 1px solid var(--lin-border-input) !important;
+  border-radius: var(--lin-radius) !important;
+  color: var(--lin-text) !important;
+  box-shadow: none !important;
+  font-family: var(--lin-font) !important;
+}
+
+.styledTextInput:focus {
+  background: var(--lin-bg) !important;
+  border-color: var(--lin-accent) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted) !important;
+  transform: none !important;
+}
+
+.styledTextInput:hover:not(:focus) {
+  background: var(--lin-bg-overlay) !important;
+  border-color: var(--lin-border-strong) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* 搜索 / 添加弹幕源操作按钮 */
+.searchItemControlAction {
+  background: var(--lin-accent-muted) !important;
+  color: var(--lin-accent-hover) !important;
+  border-color: rgba(94, 106, 210, 0.35) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+.addSourceItemControlAction {
+  background: rgba(245, 166, 35, 0.14) !important;
+  color: var(--lin-warning) !important;
+  border-color: rgba(245, 166, 35, 0.35) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+/* ---- 18.7 弹幕对话框 ---- */
+.dialogOverlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+.inputDialog,
+.selectDialog {
+  background: var(--lin-bg-overlay) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  border-radius: var(--lin-radius-xl) !important;
+  box-shadow: var(--lin-shadow-lg) !important;
+  font-family: var(--lin-font) !important;
+}
+
+.dialogTitle {
+  color: var(--lin-text) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+#dialogConfirm,
+.dialogConfirmButton {
+  background: var(--lin-accent) !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+#dialogConfirm:hover,
+.dialogConfirmButton:hover {
+  background: var(--lin-accent-hover) !important;
+  box-shadow: 0 0 0 3px var(--lin-accent-muted) !important;
+  transform: translateY(-1px) !important;
+}
+
+#dialogCancel,
+.dialogCancelButton {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--lin-border-strong) !important;
+  color: var(--lin-text) !important;
+  border-radius: var(--lin-radius) !important;
+  font-family: var(--lin-font) !important;
+  font-weight: 500 !important;
+}
+
+#dialogCancel:hover,
+.dialogCancelButton:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+}
+
+.selectDialogList {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--lin-border) !important;
+  border-radius: var(--lin-radius) !important;
+  scrollbar-color: var(--lin-accent) rgba(0, 0, 0, 0.1);
+}
+
+.select-dialog-item {
+  color: var(--lin-text) !important;
+  font-family: var(--lin-font) !important;
+  border-radius: var(--lin-radius) !important;
+  margin: 2px 4px !important;
+  transition: background 0.12s ease !important;
+}
+
+.select-dialog-item.selected {
+  background: var(--lin-accent-muted) !important;
+}
+
+.select-dialog-item:hover:not(.selected) {
+  background: var(--lin-bg-hover) !important;
+}
+
+.glassLayer {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.12)
+  ) !important;
+}
+
+/* ==========================================================================
+   19. 登录页 / 启动页
+   ========================================================================== */
+.splashLogo {
+  filter: brightness(1.1);
+}
+
+/* 登录表单（暗紫磨砂，保持原始尺寸，只补圆角） */
+.loginForm {
+  background: rgba(22, 19, 32, 0.62) !important;
+  border: 1px solid var(--lin-border-strong);
+  border-radius: var(--lin-radius-lg) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--lin-shadow-lg);
+}
+
+.loginForm .inputContainer {
+  margin-bottom: 14px;
+}
+
+/* ==========================================================================
+   20. 收尾：兼容不同布局
+   ========================================================================== */
+/* 保持 Jellyfin 各布局的原始字号，不缩放 */
+.layout-tv .navMenuOption {
+  border-radius: var(--lin-radius) !important;
+}
+
+.layout-tv .cardOverlayFab {
+  border-radius: var(--lin-radius-lg) !important;
+}
+
+/* 暗色背景下的通用文字 */
+.fieldDescription {
+  color: var(--lin-text-tertiary) !important;
+}
+
+h1, h2, h3, h4 {
+  color: var(--lin-text);
+  font-family: var(--lin-font);
+  letter-spacing: -0.01em;
+}
