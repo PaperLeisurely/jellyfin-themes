@@ -1933,6 +1933,335 @@ h1, h2, h3, h4 {
   border-radius: 50% !important;
 }
 
+/* ==========================================================================
+   18.5 补充界面覆盖（学习 Ultrachromic 等成熟主题后补齐）
+   --------------------------------------------------------------------------
+   覆盖此前遗漏的界面元素：卡片角标/指示器、播放进度、剧集列表、
+   开关控件、章节预览、提示条、标签页、管理面板等，全部黑白灰适配。
+   ========================================================================== */
+
+/* ---- 卡片角标 / 指示器（已播 / 未播 / 计数 / 媒体源） ---- */
+.countIndicator,
+.playedIndicator,
+.mediaSourceIndicator,
+.missingIndicator,
+.unairedIndicator {
+  background: rgba(15, 23, 42, 0.75) !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+.listItemIndicators {
+  right: 0.5em !important;
+  top: 0.5em !important;
+}
+
+.mediaSourceIndicator {
+  left: 0.5em !important;
+  top: 0.5em !important;
+}
+
+/* 卡片底部脚注（innerCardFooter） */
+.innerCardFooter {
+  background: rgba(15, 23, 42, 0.6) !important;
+  color: #fff !important;
+  border-radius: 0 0 var(--sc-radius) var(--sc-radius) !important;
+}
+
+.innerCardFooterClear,
+.formDialogHeader-clear,
+.formDialogFooter-clear {
+  background-color: transparent !important;
+}
+
+/* 悬停播放按钮组（cardOverlay） */
+.cardOverlayContainer {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.cardOverlayButton,
+.cardOverlayButtonIcon {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+.cardOverlayButton:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ---- 播放进度（卡片进度条 / 后台进度 / 播放进度 / 转码进度） ---- */
+.itemProgressBar {
+  background: var(--sc-border) !important;
+  border-radius: 2px !important;
+}
+
+.itemProgressBarForeground {
+  background: var(--sc-progress) !important;
+  border-radius: 2px !important;
+}
+
+.backgroundProgress > div,
+.playbackProgress > div,
+.transcodingProgress > div {
+  background-color: rgba(15, 23, 42, 0.35) !important;
+}
+
+/* 进度环（spinner） */
+.progressring-spiner {
+  border-color: var(--sc-primary) !important;
+  border-width: 0.3em !important;
+}
+
+.progressring-bg {
+  border-color: var(--sc-border) !important;
+}
+
+/* ---- 剧集列表补充 ---- */
+.listItem-border {
+  border-color: var(--sc-border) !important;
+}
+
+.listItem-indexnumberleft {
+  color: var(--sc-fg-3) !important;
+}
+
+.listItem-content {
+  border-radius: var(--sc-radius);
+}
+
+.listItemImage-large {
+  border-radius: var(--sc-radius);
+}
+
+.listItemImageButton {
+  color: #fff !important;
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-radius: 50% !important;
+}
+
+.listItemImageButton:hover {
+  background: var(--sc-primary) !important;
+}
+
+.listItemIcon {
+  background: transparent !important;
+}
+
+/* 已播/未播图标按钮 */
+.playstatebutton-icon-played {
+  color: var(--sc-fg-2) !important;
+}
+
+.playstatebutton-icon-unplayed {
+  color: var(--sc-fg-3) !important;
+}
+
+/* ---- 开关控件（mdl-switch，shadcn 风格） ---- */
+.mdl-switch__track {
+  background: var(--sc-border-strong) !important;
+}
+
+.mdl-switch__input:checked + .mdl-switch__label + .mdl-switch__trackContainer > .mdl-switch__track {
+  background: rgba(15, 23, 42, 0.6) !important;
+}
+
+.mdl-switch__thumb {
+  background: var(--sc-fg) !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+}
+
+/* ---- 章节预览（播放器进度条悬停缩略图） ---- */
+.chapterThumbContainer,
+.chapterThumb {
+  border-radius: var(--sc-radius) !important;
+  box-shadow: 0 0 1.5vh rgba(0, 0, 0, 0.6) !important;
+}
+
+.chapterThumbTextContainer {
+  background: rgba(15, 23, 42, 0.75) !important;
+  color: #fff !important;
+  border-radius: 0 0 var(--sc-radius) var(--sc-radius) !important;
+}
+
+.sliderBubble {
+  background: transparent !important;
+}
+
+.sliderMarker {
+  background: var(--sc-progress) !important;
+  width: 3px !important;
+  border-radius: 2px !important;
+}
+
+/* ---- 提示条（toast / snackbar） ---- */
+.toast {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+}
+
+/* ---- 标签页 / 分段控件 ---- */
+.sectionTabs {
+  color: var(--sc-fg-2) !important;
+}
+
+.emby-tab-button {
+  color: var(--sc-fg-2) !important;
+  border-radius: var(--sc-radius) var(--sc-radius) 0 0 !important;
+  transition: color var(--sc-dur) var(--sc-ease), background var(--sc-dur) var(--sc-ease);
+}
+
+.emby-tab-button:hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.emby-tab-button.show-focus:focus,
+.emby-tab-button[aria-selected='true'],
+.emby-tab-button.emby-tab-button-active {
+  color: var(--sc-fg) !important;
+  box-shadow: inset 0 -2px 0 var(--sc-primary);
+}
+
+.headerTabs.sectionTabs {
+  font-size: 110% !important;
+}
+
+/* 操作面板底部按钮组 */
+div[data-role="controlgroup"] a.ui-btn-active {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+div[data-role="controlgroup"] a[data-role="button"] {
+  display: table-cell !important;
+  margin: 0 !important;
+}
+
+/* ---- 评分星标（黑白：中性白/灰） ---- */
+.starIcon {
+  color: var(--sc-fg-3) !important;
+}
+
+/* ---- 详情页补充 ---- */
+.detailPagePrimaryContent {
+  max-width: 66em;
+}
+
+.trackSelections {
+  max-width: 22em;
+}
+
+.mainDetailButtons {
+  font-size: 110% !important;
+}
+
+.detailButton {
+  color: var(--sc-fg-2) !important;
+}
+
+.detailButton:hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.detailLogo {
+  filter: brightness(1.1);
+}
+
+/* ---- 管理面板 / 仪表盘 ---- */
+.detailTable {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.detailTableBodyRow-shaded {
+  background: var(--sc-hover) !important;
+}
+
+.detailTableHeaderCell {
+  color: var(--sc-fg) !important;
+  border-bottom: 1px solid var(--sc-border) !important;
+}
+
+.infoBanner {
+  background: var(--sc-secondary) !important;
+  color: var(--sc-fg) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.sessionCardFooter {
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  background: var(--sc-surface) !important;
+}
+
+.dashboardSection h3 {
+  margin: 0.5em 0 0.5em 0.5em;
+  color: var(--sc-fg) !important;
+}
+
+/* 任务进度（后台任务） */
+.taskProgressOuter {
+  background: var(--sc-border) !important;
+  border-radius: 2px !important;
+}
+
+.taskProgressInner {
+  background: var(--sc-progress) !important;
+  border-radius: 2px !important;
+}
+
+/* ---- 正在播放页 / 播放列表 ---- */
+.nowPlayingPageImage {
+  border: none !important;
+}
+
+.nowPlayingContextMenu {
+  background: var(--sc-surface) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+/* ---- 其他控件 ---- */
+.emby-checkbox,
+.selectArrow {
+  color: var(--sc-fg-2) !important;
+}
+
+.emby-select-withcolor {
+  background-color: var(--sc-input) !important;
+}
+
+.inputLabelFocused,
+.selectLabelFocused,
+.textareaLabelFocused {
+  color: var(--sc-primary) !important;
+}
+
+.inputLabelUnfocused,
+.selectLabelUnfocused,
+.textareaLabelUnfocused {
+  color: var(--sc-fg-3) !important;
+}
+
+fieldset {
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.readOnlyContent {
+  color: var(--sc-fg-2) !important;
+}
+
 /* 尊重系统"减弱动态效果"设置 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
