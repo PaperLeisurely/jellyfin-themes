@@ -2464,6 +2464,243 @@ fieldset {
   box-shadow: 0 0 0 2px var(--sc-bg), 0 0 0 4px var(--sc-ring) !important;
 }
 
+/* ==========================================================================
+   18.7 深度界面覆盖（学习 MakD zombie-release 后补齐）
+   --------------------------------------------------------------------------
+   zombie 是结合 Zesty / JellySkin / Ultrachromic 的合集主题，覆盖最全面。
+   补齐：MUI 状态类、字幕管理、同步播放、设备管理、跳过片头、筛选指示、
+   库主页图标、多选面板等，黑白灰适配。
+   ========================================================================== */
+
+/* ---- MUI 状态类（modern UI） ---- */
+.Mui-checked,
+.Mui-active {
+  color: var(--sc-primary) !important;
+}
+
+.MuiSwitch-track {
+  background: var(--sc-border-strong) !important;
+}
+
+.MuiSwitch-track.Mui-checked {
+  background: var(--sc-primary) !important;
+}
+
+.MuiTableSortLabel-icon {
+  color: var(--sc-fg-3) !important;
+}
+
+.MuiCollapse-wrapper,
+.MuiGrid-root,
+.MuiDataGrid-withBorderColor {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiAlert-icon {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ---- 字幕管理页 ---- */
+.subtitleList,
+.subtitleResults,
+.subtitleSyncContainer,
+.subtitleappearance-preview {
+  color: var(--sc-fg) !important;
+}
+
+.subtitleList .listItem,
+.subtitleResults .listItem {
+  color: var(--sc-fg) !important;
+}
+
+.subtitleList .listItem:hover,
+.subtitleResults .listItem:hover {
+  background: var(--sc-hover) !important;
+}
+
+/* 字幕下载按钮 */
+.subtitleResults .btnDownload.listItemButton,
+.btnDelete.listItemButton {
+  color: var(--sc-fg-2) !important;
+}
+
+.subtitleResults .btnDownload.listItemButton:hover,
+.btnDelete.listItemButton:hover {
+  color: var(--sc-danger) !important;
+}
+
+/* ---- 同步播放 ---- */
+.syncPlayIconCircle {
+  color: var(--sc-primary) !important;
+  text-shadow: none !important;
+}
+
+/* ---- 设备管理 ---- */
+.devicesList .cardImage {
+  filter: invert(1);
+  opacity: 0.6;
+}
+
+/* ---- 跳过片头/片尾按钮 ---- */
+.skip-button {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-radius: calc(var(--sc-radius) + 2px) !important;
+  border: none !important;
+  box-shadow: var(--sc-shadow-md) !important;
+  transition: background var(--sc-dur) var(--sc-ease);
+}
+
+.skip-button:hover {
+  background: var(--sc-primary-hover) !important;
+}
+
+/* ---- 筛选指示器 ---- */
+.filterIndicator {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  font-size: 80% !important;
+  font-weight: 700 !important;
+}
+
+/* ---- 库主页图标（我的媒体） ---- */
+.homeLibraryButton {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  transition: background var(--sc-dur) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease);
+}
+
+.homeLibraryButton:hover {
+  background: var(--sc-active) !important;
+  border-color: var(--sc-border-strong) !important;
+}
+
+.homeLibraryIcon {
+  color: var(--sc-fg-2) !important;
+}
+
+.homeLibraryText {
+  color: var(--sc-fg) !important;
+}
+
+/* ---- 多选操作面板 ---- */
+.itemSelectionPanel {
+  background: var(--sc-selected) !important;
+  border: 1px solid var(--sc-primary) !important;
+  color: var(--sc-fg) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.itemSelectionCount {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+}
+
+.selectionCommandsPanel {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ---- OSD 海报 / 图标进度 ---- */
+.osdPoster img {
+  border-radius: var(--sc-radius) !important;
+  border: 1px solid var(--sc-border) !important;
+}
+
+.iconOsdProgressInner {
+  background: var(--sc-primary) !important;
+}
+
+.iconOsdProgressOuter {
+  background: var(--sc-border) !important;
+}
+
+/* ---- 播放统计详情 ---- */
+.playerStats-stat-value {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+}
+
+.playerStats-closeButton {
+  color: #fff !important;
+}
+
+/* ---- 会话信息（仪表盘） ---- */
+.sessionNowPlayingContent-withbackground {
+  filter: blur(1px);
+}
+
+/* ---- 变暗内容层 ---- */
+.darkenContent {
+  background: rgba(15, 23, 42, 0.55) !important;
+}
+
+/* ---- 分页控件 ---- */
+.paging {
+  color: var(--sc-fg-2) !important;
+}
+
+.paging .paper-icon-button-light {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ---- 卡片 hover 微动画 ---- */
+.card-hoverable:hover .cardBox {
+  transform: translateY(-2px);
+  transition: transform var(--sc-dur-2) var(--sc-ease);
+}
+
+/* ---- 详情页内容区 ---- */
+.detailPageContent {
+  color: var(--sc-fg) !important;
+}
+
+.detailImageContainer .cardImage {
+  border-radius: var(--sc-radius) !important;
+}
+
+/* ---- 头像 / 图标容器 ---- */
+.primaryImageWrapper > img {
+  border-radius: var(--sc-radius) !important;
+}
+
+/* ---- 文本动作按钮 ---- */
+.textActionButton {
+  color: var(--sc-fg-2) !important;
+  border: 0 !important;
+}
+
+.textActionButton:hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+/* ---- 按钮变体 ---- */
+.button-flat {
+  color: var(--sc-fg-2) !important;
+}
+
+.button-flat:hover {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+}
+
+/* ---- 卷帘/折叠内容 ---- */
+.collapseContent {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ---- 忘记密码 ---- */
+.btnForgotPassword {
+  color: var(--sc-fg-2) !important;
+}
+
+.btnForgotPassword:hover {
+  color: var(--sc-fg) !important;
+}
+
 /* 尊重系统"减弱动态效果"设置 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
