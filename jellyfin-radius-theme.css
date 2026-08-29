@@ -468,39 +468,35 @@ img {
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ---- 18.2 卡片 hover（阴影提升 + 上浮 + 图片缩放） ---- */
+/* ---- 18.2 卡片 hover（参考 ElegantFin：card-hoverable + 承载过渡） ----
+   Jellyfin 的 .cardBox 自带 transition:none（锁死），
+   所以过渡放在 .cardScalable / .cardImageContainer 上（未被锁死），
+   并用 .card-hoverable（Jellyfin 对可悬停卡片添加的类）触发。 */
 .cardScalable {
   transition: box-shadow var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
 }
 
 .cardImageContainer,
 .cardImage {
-  transition: transform var(--dur-2) var(--ease), filter var(--dur) var(--ease);
-}
-
-.cardBox {
-  transition: transform var(--dur-2) var(--ease);
+  transition: transform 0.375s var(--ease), filter var(--dur) var(--ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card:hover .cardScalable {
+  .card-hoverable:hover .cardScalable,
+  .card-hoverable:hover .itemSelectionPanel {
     box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-    transform: translateY(-2px);
+    transform: scale(1.02);
   }
 
-  .card:hover .cardBox {
-    transform: translateY(-2px);
-  }
-
-  .card:hover .cardImage,
-  .card:hover .cardImageContainer {
-    transform: scale(1.04);
+  .card-hoverable:hover .cardImageContainer,
+  .card-hoverable:hover .cardImage {
+    transform: scale(1.025);
     filter: brightness(1.02);
   }
 
-  .card:active .cardScalable,
-  .card:active .cardBox {
-    transform: translateY(0);
+  .card-hoverable .cardScalable:active {
+    transform: scale(1);
+    transition: transform 75ms var(--ease);
   }
 }
 
@@ -540,12 +536,32 @@ img {
 
 /* ---- 18.4 列表项 hover ---- */
 .listItem {
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease) !important;
+}
+
+.listItem:hover {
+  transition-duration: var(--dur) !important;
 }
 
 /* ---- 18.5 导航项 hover / 选中 ---- */
 .navMenuOption {
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease) !important;
+}
+
+.navMenuOption:hover {
+  transition-duration: var(--dur) !important;
+}
+
+/* ---- 18.5b 键盘 / TV 焦点卡片动画 ----
+   Jellyfin 对聚焦卡片添加 .show-focus，配合 .card.show-animation 播放缩放 */
+.card.show-focus:not(.show-animation) .cardBox,
+.card.show-animation .cardBox {
+  transition: transform 0.05s ease-out !important;
+}
+
+.card.show-focus:not(.show-animation) .cardBox,
+.card.show-animation:focus > .cardBox {
+  transform: scale(1.1);
 }
 
 /* ---- 18.6 输入框 focus ring（shadcn 光环） ---- */
@@ -554,7 +570,7 @@ img {
 .inputContainer input,
 .emby-select {
   transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-    background var(--dur) var(--ease);
+    background var(--dur) var(--ease) !important;
 }
 
 .emby-input:focus,
@@ -576,7 +592,7 @@ img {
 
 /* ---- 18.7 弹窗 fade + zoom（shadcn dialog 动效） ---- */
 .dialog.animated-dialog {
-  animation: sc-dialog-in var(--dur-2) var(--ease);
+  animation: sc-dialog-in var(--dur-2) var(--ease) !important;
 }
 
 @keyframes sc-dialog-in {
