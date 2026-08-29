@@ -604,6 +604,29 @@ img {
   box-shadow: 0 0 0 2px #000, 0 0 0 4px #fff !important;
 }
 
+/* ---- 18.9 播放器按钮聚焦/选中：圆形蓝色高亮 → 圆角矩形（shadcn） ----
+   Jellyfin 默认按钮聚焦背景是圆形（随按钮圆形形状），
+   参考 shadcn：聚焦/选中背景改为圆角矩形（6px），
+   形状与 shadcn 按钮一致。 */
+.videoOsdBottom .paper-icon-button-light:focus,
+.videoOsdBottom .paper-icon-button-light.show-focus:focus,
+.videoOsdBottom .paper-icon-button-light:active,
+.osdControls .paper-icon-button-light:focus,
+.osdControls .paper-icon-button-light.show-focus:focus,
+.osdControls .paper-icon-button-light:active {
+  border-radius: var(--radius-sm) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 播放/暂停大按钮聚焦：圆角矩形 */
+.videoOsdBottom .btnPause:focus,
+.videoOsdBottom .btnPause.show-focus:focus,
+.videoOsdBottom .playPauseButton:focus,
+.videoOsdBottom .playPauseButton.show-focus:focus {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #fff !important;
+}
+
 /* 尊重系统"减弱动态效果"设置 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
