@@ -1,0 +1,2228 @@
+/* ==========================================================================
+   Jellyfin · bilibili（B站）风格主题
+   --------------------------------------------------------------------------
+   设计语言：完全模仿 bilibili 网页版
+   - 主色：B站粉 #FB7299（按钮/链接/选中/进度条/标题hover）
+   - 白天模式：浅灰画布 #F1F2F3、白色顶栏与卡片、主文字 #18191C
+   - 黑夜模式：深灰画布 #18191C、卡片 #242529、主文字 #E3E5E7
+   - 自动跟随系统（prefers-color-scheme: light / dark）
+   - 视频卡片：hover 上浮 + 阴影 + 封面微缩放 + 标题变粉
+   - 搜索框：B站顶部搜索框风格（浅灰底圆角 + 聚焦粉色描边）
+   兼容：Jellyfin 10.11.11 主界面 · Media Bar 插件家族（完整适配）
+   弹幕插件：不做任何适配，完全使用插件自身默认 UI。
+   使用：Jellyfin → 设置 → 显示 → 自定义 CSS，粘贴全部内容。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 设计令牌（Design Tokens）
+   ========================================================================== */
+:root {
+  /* 画布 */
+  --bili-bg: #F1F2F3;
+  --bili-bg-grad: linear-gradient(180deg, #FAFBFC 0%, #F1F2F3 100%);
+  /* 表面 */
+  --bili-surface: #FFFFFF;
+  --bili-surface-2: #F6F7F8;
+  --bili-toolbar: #FFFFFF;
+  --bili-sidebar: #FFFFFF;
+  --bili-overlay: rgba(255, 255, 255, 0.94);
+  /* 文字（B站标准色阶） */
+  --bili-text: #18191C;
+  --bili-text-2: #61666D;
+  --bili-text-3: #9499A0;
+  --bili-on-accent: #FFFFFF;
+  /* 主色（B站粉） */
+  --bili-pink: #FB7299;
+  --bili-pink-hover: #F55C87;
+  --bili-pink-soft: rgba(251, 114, 153, 0.12);
+  --bili-pink-ring: rgba(251, 114, 153, 0.32);
+  /* 边框 / 分隔 */
+  --bili-border: rgba(0, 0, 0, 0.10);
+  --bili-border-strong: rgba(0, 0, 0, 0.22);
+  --bili-divider: rgba(0, 0, 0, 0.06);
+  /* 交互反馈 */
+  --bili-hover: rgba(0, 0, 0, 0.05);
+  --bili-active: rgba(0, 0, 0, 0.09);
+  /* 输入框 */
+  --bili-omnibox: #F1F2F3;
+  --bili-omnibox-focus: #FFFFFF;
+  /* 阴影 */
+  --bili-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --bili-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --bili-shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.18);
+  --bili-shadow-card-hover: 0 8px 20px rgba(0, 0, 0, 0.16);
+  /* 圆角 */
+  --bili-radius: 8px;
+  --bili-radius-lg: 12px;
+  --bili-radius-xl: 16px;
+  --bili-radius-pill: 999px;
+  /* 滚动条 */
+  --bili-scrollbar: rgba(0, 0, 0, 0.25);
+  --bili-scrollbar-hover: rgba(251, 114, 153, 0.6);
+  /* 进度 */
+  --bili-progress: #FB7299;
+  /* Media Bar 头图几何令牌（与暗紫主题一致的避让参数） */
+  --bili-hero-radius: 16px;
+  --bili-hero-margin: 16px;
+  --bili-hero-side-margin: 0.5cm;
+  --bili-hero-bottom-margin: -1.5cm;
+  /* 辉光 / 危险色（B站红） */
+  --bili-glow: rgba(251, 114, 153, 0.55);
+  --bili-danger: #F0483E;
+  /* 字体：B站使用 PingFang / HarmonyOS Sans / 苹方 */
+  --bili-font: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei",
+    -apple-system, "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 画布：B站黑夜模式 */
+    --bili-bg: #18191C;
+    --bili-bg-grad: linear-gradient(180deg, #202124 0%, #18191C 100%);
+    /* 表面 */
+    --bili-surface: #242529;
+    --bili-surface-2: #2E2F33;
+    --bili-toolbar: #242529;
+    --bili-sidebar: #242529;
+    --bili-overlay: rgba(24, 25, 28, 0.94);
+    /* 文字 */
+    --bili-text: #E3E5E7;
+    --bili-text-2: #9499A0;
+    --bili-text-3: #6D757A;
+    /* （--bili-on-accent / --bili-pink 与浅色相同，继承） */
+    /* 主色 hover（深色略提亮） */
+    --bili-pink-hover: #FF8FAE;
+    --bili-pink-soft: rgba(251, 114, 153, 0.18);
+    --bili-pink-ring: rgba(251, 114, 153, 0.38);
+    /* 边框 / 分隔 */
+    --bili-border: rgba(255, 255, 255, 0.12);
+    --bili-border-strong: rgba(255, 255, 255, 0.25);
+    --bili-divider: rgba(255, 255, 255, 0.08);
+    /* 交互反馈 */
+    --bili-hover: rgba(255, 255, 255, 0.07);
+    --bili-active: rgba(255, 255, 255, 0.12);
+    /* 输入框 */
+    --bili-omnibox: #2E2F33;
+    --bili-omnibox-focus: #35363A;
+    /* 阴影 */
+    --bili-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
+    --bili-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --bili-shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.55);
+    --bili-shadow-card-hover: 0 8px 20px rgba(0, 0, 0, 0.5);
+    /* 滚动条 */
+    --bili-scrollbar: rgba(255, 255, 255, 0.28);
+    --bili-scrollbar-hover: rgba(251, 114, 153, 0.7);
+    /* （--bili-progress 与浅色相同，继承） */
+    /* 辉光 / 危险色 */
+    --bili-glow: rgba(251, 114, 153, 0.6);
+    --bili-danger: #FF5C5C;
+  }
+}
+
+/* ==========================================================================
+   1.5 Jellyfin 原生 palette 变量桥接
+   --------------------------------------------------------------------------
+   Jellyfin 原生组件（MUI 对话框/菜单/Snackbar、.listItem 等）通过
+   --jf-palette-* 变量取色（见源码 _theme.scss）。覆盖这些变量后，
+   所有原生文字/背景自动跟随 B站色板，无需逐选择器覆盖——这是
+   对 Jellyfin 原生 UI 最彻底的"避让"。
+   浅色 = B站白天（白底黑字），深色 = B站黑夜（黑底白字）。
+   ========================================================================== */
+:root {
+  /* 文字：B站浅色模式色阶（主 #18191C / 次 #61666D） */
+  --jf-palette-text-primary: #18191C;
+  --jf-palette-text-secondary: #61666D;
+  --jf-palette-text-primaryChannel: 24 25 28;
+  --jf-palette-text-secondaryChannel: 97 102 109;
+  --jf-palette-text-disabled: rgba(24, 25, 28, 0.5);
+  --jf-palette-text-icon: rgba(24, 25, 28, 0.5);
+  /* 背景 */
+  --jf-palette-background-default: #F1F2F3;
+  --jf-palette-background-paper: #FFFFFF;
+  --jf-palette-background-defaultChannel: 241 242 243;
+  --jf-palette-background-paperChannel: 255 255 255;
+  /* 主色：B站粉 */
+  --jf-palette-primary-main: #FB7299;
+  --jf-palette-primary-dark: #F55C87;
+  --jf-palette-primary-contrastText: #FFFFFF;
+  --jf-palette-primary-mainChannel: 251 114 153;
+  --jf-palette-primary-darkChannel: 245 92 135;
+  --jf-palette-primary-lightChannel: 255 138 171;
+  --jf-palette-secondary-main: #00AEEC;
+  --jf-palette-secondary-contrastText: #FFFFFF;
+  --jf-palette-secondary-mainChannel: 0 174 236;
+  /* 错误 / 提示 */
+  --jf-palette-error-main: #F0483E;
+  --jf-palette-error-light: #FF8A80;
+  --jf-palette-error-contrastText: #FFFFFF;
+  --jf-palette-error-mainChannel: 240 72 62;
+  --jf-palette-error-lightChannel: 255 138 128;
+  --jf-palette-error-darkChannel: 183 28 28;
+  /* 顶栏 */
+  --jf-palette-AppBar-defaultBg: #FFFFFF;
+  --jf-palette-AppBar-transparentBg: rgba(255, 255, 255, 0.85);
+  --jf-palette-AppBar-gradient: none;
+  /* 分隔 / 交互 */
+  --jf-palette-divider: rgba(0, 0, 0, 0.10);
+  --jf-palette-dividerChannel: 0 0 0;
+  --jf-palette-action-hover: rgba(0, 0, 0, 0.05);
+  --jf-palette-action-focus: rgba(0, 0, 0, 0.08);
+  --jf-palette-action-selectedOpacity: 0.12;
+  --jf-palette-action-active: #18191C;
+  --jf-palette-action-activeChannel: 24 25 28;
+  --jf-palette-action-selected: rgba(0, 0, 0, 0.12);
+  --jf-palette-action-selectedChannel: 0 0 0;
+  --jf-palette-action-disabled: rgba(0, 0, 0, 0.38);
+  --jf-palette-action-disabledBackground: rgba(0, 0, 0, 0.12);
+  --jf-palette-action-hoverOpacity: 0.06;
+  --jf-palette-action-focusOpacity: 0.10;
+  --jf-palette-action-activatedOpacity: 0.18;
+  --jf-palette-action-disabledOpacity: 0.38;
+  /* 通用 */
+  --jf-palette-common-black: #000000;
+  --jf-palette-common-background: #FFFFFF;
+  --jf-palette-common-onBackground: #18191C;
+  --jf-palette-common-backgroundChannel: 255 255 255;
+  --jf-palette-common-onBackgroundChannel: 24 25 28;
+  /* 输入框 / 按钮 / 弹出提示 */
+  --jf-palette-FilledInput-bg: #F1F2F3;
+  --jf-palette-FilledInput-borderColor: rgba(0, 0, 0, 0.10);
+  --jf-palette-FilledInput-hoverBg: rgba(0, 0, 0, 0.06);
+  --jf-palette-FilledInput-disabledBg: rgba(0, 0, 0, 0.05);
+  --jf-palette-Button-inheritContainedBg: #FFFFFF;
+  --jf-palette-Button-inheritContainedHoverBg: #F1F2F3;
+  --jf-palette-SnackbarContent-bg: #18191C;
+  --jf-palette-SnackbarContent-color: #FFFFFF;
+  --jf-palette-Alert-infoFilledBg: #00AEEC;
+  --jf-palette-Alert-infoFilledColor: #FFFFFF;
+  --jf-palette-common-white: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 文字：B站黑夜模式色阶（主 #E3E5E7 / 次 #9499A0）
+       （与浅色相同的变量在此省略，自动继承） */
+    --jf-palette-text-primary: #E3E5E7;
+    --jf-palette-text-secondary: #9499A0;
+    --jf-palette-text-primaryChannel: 227 229 231;
+    --jf-palette-text-secondaryChannel: 148 153 160;
+    --jf-palette-text-disabled: rgba(227, 229, 231, 0.5);
+    --jf-palette-text-icon: rgba(227, 229, 231, 0.5);
+    /* 背景 */
+    --jf-palette-background-default: #18191C;
+    --jf-palette-background-paper: #242529;
+    --jf-palette-background-defaultChannel: 24 25 28;
+    --jf-palette-background-paperChannel: 36 37 41;
+    /* 主色（仅深色不同的项；主粉/主通道/对比色等与浅色相同，继承） */
+    --jf-palette-primary-dark: #FF8FAE;
+    /* 错误（深色亮红） */
+    --jf-palette-error-main: #FF5C5C;
+    --jf-palette-error-mainChannel: 255 92 92;
+    /* 顶栏 */
+    --jf-palette-AppBar-defaultBg: #242529;
+    --jf-palette-AppBar-transparentBg: rgba(24, 25, 28, 0.85);
+    /* 分隔 / 交互 */
+    --jf-palette-divider: rgba(255, 255, 255, 0.12);
+    --jf-palette-dividerChannel: 255 255 255;
+    --jf-palette-action-hover: rgba(255, 255, 255, 0.07);
+    --jf-palette-action-focus: rgba(255, 255, 255, 0.10);
+    --jf-palette-action-selectedOpacity: 0.18;
+    --jf-palette-action-active: #E3E5E7;
+    --jf-palette-action-activeChannel: 227 229 231;
+    --jf-palette-action-selected: rgba(255, 255, 255, 0.16);
+    --jf-palette-action-selectedChannel: 255 255 255;
+    --jf-palette-action-disabled: rgba(255, 255, 255, 0.38);
+    --jf-palette-action-disabledBackground: rgba(255, 255, 255, 0.12);
+    --jf-palette-action-hoverOpacity: 0.08;
+    --jf-palette-action-focusOpacity: 0.12;
+    --jf-palette-action-activatedOpacity: 0.24;
+    --jf-palette-action-disabledOpacity: 0.38;
+    /* 通用 */
+    --jf-palette-common-background: #18191C;
+    --jf-palette-common-onBackground: #E3E5E7;
+    --jf-palette-common-backgroundChannel: 24 25 28;
+    --jf-palette-common-onBackgroundChannel: 227 229 231;
+    /* 输入框 / 按钮 / 弹出提示 */
+    --jf-palette-FilledInput-bg: #2E2F33;
+    --jf-palette-FilledInput-borderColor: rgba(255, 255, 255, 0.12);
+    --jf-palette-FilledInput-hoverBg: rgba(255, 255, 255, 0.13);
+    --jf-palette-FilledInput-disabledBg: rgba(255, 255, 255, 0.12);
+    --jf-palette-Button-inheritContainedBg: #242529;
+    --jf-palette-Button-inheritContainedHoverBg: #2E2F33;
+    --jf-palette-SnackbarContent-bg: #E3E5E7;
+    --jf-palette-SnackbarContent-color: #18191C;
+  }
+}
+
+/* ==========================================================================
+   2. 全局基础
+   ========================================================================== */
+/* 不设置 font-size：Jellyfin html 默认 20px(1080p)/27px */
+html {
+  background: var(--bili-bg);
+  color: var(--bili-text);
+  font-family: var(--bili-font);
+}
+
+body {
+  background: var(--bili-bg-grad);
+  background-attachment: fixed;
+  color: var(--bili-text);
+  font-family: var(--bili-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景容器：保留 Jellyfin 默认行为，只保证底色一致 */
+.backgroundContainer,
+#appBackground {
+  background-color: var(--bili-bg) !important;
+}
+
+/* 文本选区：B站粉 */
+::selection {
+  background: var(--bili-pink-ring);
+  color: var(--bili-text);
+}
+
+/* 链接：黑白灰体系（次文字色，hover 变主文字色） */
+a {
+  color: var(--bili-text-2) !important;
+}
+
+a:hover {
+  color: var(--bili-text) !important;
+}
+
+/* ==========================================================================
+   3. 滚动条（细滚动条，hover 变粉）
+   ========================================================================== */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--bili-scrollbar);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--bili-scrollbar-hover);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bili-scrollbar) transparent;
+}
+
+/* ==========================================================================
+   4. 顶栏（B站顶部导航栏风格）
+   --------------------------------------------------------------------------
+   白/深灰底 + 底部细线；图标按钮 hover 浅粉圆底；
+   头像按钮排除（行内 background-image，background 简写悬停会抹掉它）。
+   ========================================================================== */
+html:not(.layout-tv) .skinHeader:not(.osdHeader) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 999 !important;
+  contain: none !important;
+  background: var(--bili-toolbar) !important;
+  border-bottom: 1px solid var(--bili-divider);
+  color: var(--bili-text);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 顶栏标题文字 */
+.skinHeader:not(.osdHeader) .headerText,
+.skinHeader:not(.osdHeader) .pageTitle {
+  color: var(--bili-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+
+/* 顶栏按钮：圆形 hover 浅粉底（B站风格） */
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--bili-text-2) !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound):hover {
+  color: var(--bili-text) !important;
+  background: var(--bili-pink-soft) !important;
+}
+
+/* 顶栏搜索按钮：B站粉 */
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound).btnSearchButton {
+  color: var(--bili-text) !important;
+}
+
+/* 播放器 OSD 顶栏：保持 Jellyfin 原始深色渐变遮罩 */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   5. 侧边栏 / 抽屉（B站左侧导航风格）
+   --------------------------------------------------------------------------
+   白/深灰底；选中项粉色文字 + 浅粉软底（B站导航选中即粉色）。
+   ========================================================================== */
+#mainDrawer,
+.mainDrawer {
+  background: var(--bili-sidebar) !important;
+  box-shadow: 1px 0 0 var(--bili-divider);
+  color: var(--bili-text-2);
+}
+
+.sidebarHeader {
+  color: var(--bili-text) !important;
+}
+
+.sidebarLogo {
+  filter: none !important;
+}
+
+.navMenuOption {
+  color: var(--bili-text-2) !important;
+  border-radius: var(--bili-radius) !important;
+  margin-right: 8px !important;
+  margin-left: 8px !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navMenuOption:hover {
+  background: var(--bili-hover) !important;
+  color: var(--bili-text) !important;
+}
+
+.navMenuOption.selected,
+.navMenuOption.selectable.selected,
+.navMenuOption.selectable:focus {
+  background: var(--bili-pink-soft) !important;
+  color: var(--bili-text) !important;
+  font-weight: 600 !important;
+}
+
+.sidebarFooter {
+  color: var(--bili-text-3) !important;
+  border-top: 1px solid var(--bili-divider);
+}
+
+/* 打开抽屉时的遮罩 */
+.tmla-mask.backdrop {
+  background: rgba(24, 25, 28, 0.45) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   6. 区块标题
+   ========================================================================== */
+.sectionTitle,
+.sectionTitleText,
+.sectionTitleContainer .sectionTitle,
+.pageTitle {
+  color: var(--bili-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+
+/* 区块标题 hover */
+.sectionTitleContainer:hover .sectionTitle {
+  color: var(--bili-text) !important;
+}
+
+/* ==========================================================================
+   7. 卡片（B站视频卡片风格）
+   --------------------------------------------------------------------------
+   - 8px 圆角、hover 上浮 + 阴影 + 封面微缩放
+   - 标题 hover 变粉（B站标志性交互）
+   - 纤细描边画在图片元素自身，随图片缩放同步放大缩小
+   ========================================================================== */
+.cardBox {
+  border-radius: var(--bili-radius);
+}
+
+.cardScalable {
+  position: relative;
+  border-radius: var(--bili-radius);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.cardImageContainer,
+.chapterCardImageContainer {
+  /* 底色透明：避免圆角处露出深色占位底形成黑边；
+     图片为行内 background-image，不能用 background 简写 !important */
+  background-color: transparent !important;
+  border-radius: var(--bili-radius);
+  overflow: hidden;
+}
+
+.cardImage {
+  border-radius: var(--bili-radius);
+  /* 基础态过渡 = 离开悬停时生效：QQ 回弹（y>1 过冲） */
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  /* 纤细描边画在图片自身：随 transform 同步缩放 */
+  box-shadow: inset 0 0 0 1px var(--bili-border);
+}
+
+/* 首页海报等旧版卡片：图片为 background-image 设在 .cardImageContainer 上 */
+.cardImageContainer {
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px var(--bili-border);
+}
+
+.cardPadder {
+  background-color: var(--bili-surface-2) !important;
+}
+
+/* 季/集卡片（竖版海报等）占位底：压过 Jellyfin 默认 #242424 深色，
+   白天浅灰 / 黑夜深灰，跟随主题 */
+.cardBox .cardPadder,
+.cardBox:not(.visualCardBox) .cardPadder,
+.cardScalable .cardPadder,
+.cardPadder-portrait,
+.cardPadder-overflowPortrait,
+.cardPadder-overflowBackdrop,
+.cardPadder-square,
+.cardPadder-overflowSquare,
+.cardPadder-banner,
+.cardPadder-backdrop,
+.cardPadder-mixedBackdrop {
+  background-color: var(--bili-surface-2) !important;
+}
+
+.defaultCardBackground,
+.cardContent:not(.defaultCardBackground) {
+  background-color: var(--bili-surface-2) !important;
+}
+
+/* 悬停态：上浮 + 阴影 + 封面微放大 */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    box-shadow: var(--bili-shadow-card-hover);
+  }
+
+  .card:hover .cardImage,
+  .card:hover .cardImageContainer {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease,
+      box-shadow 0.3s ease;
+    transform: scale(1.06);
+    filter: brightness(1.03);
+    box-shadow: inset 0 0 0 1px var(--bili-pink-ring);
+  }
+
+  .card:hover .cardBox {
+    transform: translateY(-3px);
+  }
+
+  .card:active .cardBox {
+    transform: translateY(-1px);
+  }
+}
+
+/* 卡片文字 */
+.cardText {
+  color: var(--bili-text) !important;
+  font-weight: 500 !important;
+}
+
+/* B站：标题 hover 变粉 */
+.cardText:hover {
+  color: var(--bili-text) !important;
+}
+
+.cardText-secondary,
+.cardText .cardText-secondary {
+  color: var(--bili-text-2) !important;
+  font-weight: 400 !important;
+}
+
+/* 剧集列表缩略图 */
+.listItemImage {
+  border-radius: var(--bili-radius);
+}
+
+/* 悬停播放按钮（Fab）：B站粉 */
+.cardOverlayFab {
+  background: var(--bili-pink) !important;
+  color: var(--bili-on-accent) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--bili-shadow-md) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cardOverlayFab:hover {
+  background: var(--bili-pink-hover) !important;
+  transform: scale(1.08);
+  box-shadow: var(--bili-shadow-lg);
+}
+
+.cardOverlayFab:active {
+  transform: scale(0.88) !important;
+}
+
+/* 卡片角标（B站播放量/时长角标风格） */
+.videoIndicator,
+.cardIndicators .videoIndicator {
+  background: rgba(24, 25, 28, 0.72) !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 分级标签 */
+.age-rating {
+  background: var(--bili-surface-2) !important;
+  color: var(--bili-text-2) !important;
+  border: 1px solid var(--bili-border) !important;
+  border-radius: 4px !important;
+}
+
+/* ==========================================================================
+   8. 按钮（B站按钮风格）
+   --------------------------------------------------------------------------
+   主按钮：粉色填充白字（B站"关注/收藏"式按钮）；次要按钮：浅灰底。
+   ========================================================================== */
+.emby-button {
+  color: var(--bili-text) !important;
+  border-radius: var(--bili-radius) !important;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.emby-button:hover {
+  background: var(--bili-hover) !important;
+}
+
+/* 主按钮（raised / primary）：B站粉填充 */
+.emby-button.raised,
+.emby-button.raised.primary,
+.btn-primary,
+.button-submit,
+.btnSubmit {
+  background: var(--bili-pink) !important;
+  color: var(--bili-on-accent) !important;
+  border-radius: var(--bili-radius) !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+
+.emby-button.raised:hover,
+.emby-button.raised.primary:hover,
+.btn-primary:hover,
+.button-submit:hover,
+.btnSubmit:hover {
+  background: var(--bili-pink-hover) !important;
+  color: var(--bili-on-accent) !important;
+  box-shadow: var(--bili-shadow-sm) !important;
+}
+
+/* 文字按钮（ghost）：粉色文字 */
+.emby-button.accent {
+  color: var(--bili-text) !important;
+  background: transparent !important;
+}
+
+.emby-button.accent:hover {
+  background: var(--bili-pink-soft) !important;
+}
+
+/* 图标按钮（排除头像按钮：其 background-image 由行内样式设置，
+   任何悬停底色/变色都会破坏头像；头像保持 Jellyfin 默认，不做任何修改） */
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--bili-text-2) !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):hover:not(:disabled) {
+  color: var(--bili-text) !important;
+  background: var(--bili-pink-soft) !important;
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):focus:not(:disabled),
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound).show-focus:focus {
+  color: var(--bili-text) !important;
+  background: var(--bili-pink-soft) !important;
+}
+
+/* 头像按钮：不写任何样式，保持 Jellyfin 默认（含行内 background-image） */
+
+/* 键盘焦点环：B站粉 */
+.show-focus:focus,
+.emby-button:focus-visible,
+.paper-icon-button-light:focus-visible {
+  outline: 2px solid var(--bili-pink-ring) !important;
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   9. 输入框 / 下拉 / 滑块（B站顶部搜索框风格）
+   ========================================================================== */
+.emby-input,
+.emby-textarea,
+.inputContainer input {
+  background: var(--bili-omnibox) !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--bili-radius-pill) !important;
+  color: var(--bili-text) !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.emby-input:hover,
+.emby-textarea:hover,
+.inputContainer input:hover {
+  background: var(--bili-omnibox-focus) !important;
+  box-shadow: var(--bili-shadow-sm) !important;
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.inputContainer input:focus {
+  background: var(--bili-omnibox-focus) !important;
+  border-color: var(--bili-pink) !important;
+  box-shadow: 0 0 0 3px var(--bili-pink-ring) !important;
+  outline: none !important;
+}
+
+/* 下拉框 */
+.emby-select,
+.selectContainer select {
+  background: var(--bili-omnibox) !important;
+  border: 1px solid var(--bili-border) !important;
+  border-radius: var(--bili-radius) !important;
+  color: var(--bili-text) !important;
+  box-shadow: none !important;
+}
+
+.emby-select:focus {
+  border-color: var(--bili-pink) !important;
+  box-shadow: 0 0 0 3px var(--bili-pink-ring) !important;
+}
+
+/* 滑块（进度条 / 音量）：粉色 */
+input[is="emby-slider"],
+input[type="range"] {
+  accent-color: var(--bili-progress);
+}
+
+.emby-slider-container .emby-slider::-webkit-slider-runnable-track {
+  background: var(--bili-border) !important;
+}
+
+/* ==========================================================================
+   10. 对话框 / 弹窗 / 操作菜单（B站弹窗风格）
+   ========================================================================== */
+.dialog,
+.dialog.animated-dialog,
+.formDialog {
+  background: var(--bili-surface) !important;
+  color: var(--bili-text) !important;
+  border-radius: var(--bili-radius-xl) !important;
+  box-shadow: var(--bili-shadow-lg) !important;
+  border: 1px solid var(--bili-divider);
+}
+
+.dialog-backdrop {
+  background: rgba(24, 25, 28, 0.5) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.formDialogHeader {
+  background: transparent !important;
+  color: var(--bili-text) !important;
+}
+
+.formDialogHeaderTitle {
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+
+.formDialogFooter {
+  background: transparent !important;
+  border-top: 1px solid var(--bili-divider) !important;
+}
+
+/* 操作菜单 / 下拉菜单 */
+.paper-list-container {
+  background: var(--bili-surface) !important;
+  border-radius: var(--bili-radius-lg) !important;
+  box-shadow: var(--bili-shadow-lg) !important;
+  color: var(--bili-text) !important;
+  border: 1px solid var(--bili-divider);
+}
+
+.listItem {
+  color: var(--bili-text) !important;
+  border-radius: var(--bili-radius);
+}
+
+.listItem:hover {
+  background: var(--bili-hover) !important;
+}
+
+.listItem:focus {
+  background: var(--bili-hover) !important;
+}
+
+/* 复选框 / 单选：B站粉 */
+.checkboxOutline {
+  border-color: var(--bili-text-3) !important;
+}.checkbox:checked + .checkboxOutline {
+  background: var(--bili-pink) !important;
+  border-color: var(--bili-pink) !important;
+}
+
+.checkbox:checked + .checkboxOutline::after {
+  border-color: var(--bili-on-accent) !important;
+}
+
+.radioOutline {
+  border-color: var(--bili-text-3) !important;
+}
+
+.radio:checked + .radioOutline {
+  border-color: var(--bili-pink) !important;
+}
+
+.radio:checked + .radioOutline::after {
+  background: var(--bili-pink) !important;
+}
+
+/* ==========================================================================
+   11. 列表（详情页 / 媒体列表）
+   ========================================================================== */
+.listView .listItem {
+  background: transparent !important;
+}
+
+.listView .listItem:hover {
+  background: var(--bili-hover) !important;
+  border-radius: var(--bili-radius);
+}
+
+.listItem:focus,
+.listItem.selected {
+  background: var(--bili-pink-soft) !important;
+  color: var(--bili-text) !important;
+}
+
+/* ==========================================================================
+   12. 正在播放栏（B站播放器底栏风格）
+   ========================================================================== */
+.nowPlayingBar {
+  background: var(--bili-toolbar) !important;
+  border-top: 1px solid var(--bili-divider);
+  color: var(--bili-text) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 顶部播放进度细线（B站粉） */
+.nowPlayingBarTop {
+  background: var(--bili-progress) !important;
+  opacity: 0.9;
+}
+
+.nowPlayingBarText,
+.nowPlayingBarTitle,
+.nowPlayingBarSubTitle {
+  color: var(--bili-text) !important;
+}
+
+.nowPlayingBarSubTitle {
+  color: var(--bili-text-2) !important;
+}
+
+.nowPlayingBar .mediaButton {
+  color: var(--bili-text-2) !important;
+}
+
+.nowPlayingBar .mediaButton:hover {
+  color: var(--bili-text) !important;
+  background: var(--bili-hover) !important;
+}
+
+.nowPlayingBar .playPauseButton {
+  color: var(--bili-on-accent) !important;
+  background: var(--bili-pink) !important;
+  border-radius: 50% !important;
+}
+
+.nowPlayingBar .playPauseButton:hover {
+  background: var(--bili-pink-hover) !important;
+}
+
+.nowPlayingBarPositionSlider::-webkit-slider-thumb {
+  background: var(--bili-progress) !important;
+  border-radius: 50% !important;
+}
+
+/* ==========================================================================
+   13. 移动端底部导航
+   ========================================================================== */
+.appfooter {
+  background: var(--bili-toolbar) !important;
+  border-top: 1px solid var(--bili-divider);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.appfooter .emby-button {
+  color: var(--bili-text-2) !important;
+}
+
+.appfooter .emby-button:hover,
+.appfooter .emby-button.show-focus:focus {
+  color: var(--bili-text) !important;
+  background: var(--bili-hover) !important;
+}
+
+.appfooter .emby-button.active {
+  color: var(--bili-text) !important;
+}
+
+/* ==========================================================================
+   14. 播放器 OSD（仅颜色适配，布局/效果保持 Jellyfin 默认）
+   --------------------------------------------------------------------------
+   播放器界面去除多余效果（自定义渐晕曲线、缩放动效、阴影等），
+   恢复 Jellyfin 默认布局与效果，只保留：
+   - 文字颜色（白/浅灰）
+   - 按钮颜色（播放按钮 B站粉、图标白）
+   - UI 颜色（进度条/音量条粉色）
+   - 兼容性内容（.osdHeader 排除、头像排除等）
+   视频画面保持默认黑色衬底。
+   ========================================================================== */
+
+/* ---- 14.1 顶部标题栏：Jellyfin 默认渐晕 + 白色文字 ---- */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.skinHeader.osdHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader.osdHeader .emby-button:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.skinHeader.osdHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader.osdHeader .emby-button:not(.headerUserButton):not(.headerUserButtonRound):hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #fff !important;
+}
+
+.skinHeader.osdHeader .osdTitle,
+.skinHeader.osdHeader .headerText {
+  color: #fff !important;
+  font-weight: 500 !important;
+}
+
+/* ---- 14.2 底部控制栏：Jellyfin 默认渐晕 + 白色文字 ---- */
+.videoOsdBottom {
+  background: linear-gradient(
+    0deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  color: #fff;
+}
+
+.videoOsdBottom-hidden {
+  background: transparent !important;
+}
+
+/* ---- 14.3 控制按钮（白色图标，hover 变亮） ---- */
+.osdControls .paper-icon-button-light {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 50% !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.osdControls .paper-icon-button-light:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #fff !important;
+}
+
+/* ---- 14.4 播放/暂停按钮：仅粉色（颜色），无阴影/缩放动效 ---- */
+.videoOsdBottom .btnPause,
+.videoOsdBottom .playPauseButton {
+  background: var(--bili-pink) !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+}
+
+.videoOsdBottom .btnPause:hover,
+.videoOsdBottom .playPauseButton:hover {
+  background: var(--bili-pink-hover) !important;
+}
+
+/* ---- 14.5 进度条（粉色，UI 颜色） ----
+   轨道：白色半透明；已播：粉色；thumb：粉色圆点（无阴影） */
+.mdl-slider::-webkit-slider-thumb {
+  background: var(--bili-pink) !important;
+}
+
+.mdl-slider::-moz-range-thumb {
+  background: var(--bili-pink) !important;
+}
+
+.mdl-slider-background-flex {
+  background: rgba(255, 255, 255, 0.35) !important;
+  height: 0.2em !important;
+}
+
+.mdl-slider-background-lower {
+  background-color: var(--bili-pink) !important;
+}
+
+.mdl-slider-background-upper {
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ---- 14.6 音量条（粉色，UI 颜色） ---- */
+.osdVolumeSlider .mdl-slider::-webkit-slider-thumb {
+  background: var(--bili-pink) !important;
+}
+
+.osdVolumeSlider .mdl-slider-background-lower {
+  background-color: var(--bili-pink) !important;
+}
+
+/* ---- 14.7 时间 / 文字信息（白色，无阴影） ---- */
+.osdTextContainer,
+.osdTimeText,
+.endsAtText,
+.osdTitle,
+.osdSecondaryMediaInfo {
+  color: #fff !important;
+}
+
+.osdTextContainer-secondary {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ---- 14.8 视频画面容器（保持默认黑色衬底） ---- */
+.videoPlayerContainer {
+  background: #000 !important;
+}
+
+/* ---- 14.9 播放器弹窗 / 设置菜单（仅配色） ---- */
+.osdSettingsDialog .dialog,
+.playbackSettings .dialog {
+  background: rgba(24, 25, 28, 0.92) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: var(--bili-radius-lg) !important;
+}
+
+.osdSettingsDialog .paper-list-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   15. ★ Media Bar 插件 · 完整兼容区（避让规则全套继承暗紫主题）★
+   --------------------------------------------------------------------------
+   覆盖以下插件（共用同一套 .featured-content DOM 结构）：
+     · IAmParadox27/jellyfin-plugin-media-bar（10.11 分支）
+     · MakD/Jellyfin-Media-Bar（slideshowpure 自定义代码版）
+     · CodeDevMLH/jellyfin-plugin-media-bar-enhanced（含 .media-bar-* 设置弹窗）
+   --------------------------------------------------------------------------
+   避让原则（与暗紫主题一致）：
+   - 插件自身 CSS 由插件注入，本区规则统一使用高优先级选择器 + !important；
+   - 保持插件默认几何/尺寸，只换配色为 B站风格；
+   - 头图圆角矩形框：宽度 = 视口宽 − 2×侧边距，高度 55vh，
+     下方板块跟随卡片底部，头图内部完全采用插件原版布局。
+   ========================================================================== */
+
+/* ---- 15.1 字体与文本基线 ---- */
+.featured-content,
+.featured-content * {
+  font-family: var(--bili-font) !important;
+}
+
+/* ---- 15.2 加载屏（bar-loading） ---- */
+.bar-loading {
+  background-color: var(--bili-bg) !important;
+}
+
+.bar-loading .splashLogo {
+  filter: brightness(1.1);
+}
+
+.bar-loading h1 div {
+  filter: brightness(1.15);
+}
+
+/* 加载进度条（保持插件原始尺寸，仅换配色） */
+.progress-container {
+  border-radius: 2px;
+  overflow: visible;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--bili-pink-hover), var(--bili-pink)) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 0 12px var(--bili-glow);
+}
+
+.unfilled-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+}
+
+/* ---- 15.3 主容器（保持插件默认几何，无覆写）---- */
+
+/* ---- 15.4 背景与遮罩 ---- */
+.backdrop {
+  border-radius: 0 !important;
+  object-position: center 20% !important;
+}
+
+/* 不做任何滤镜/遮罩效果：画面完全原色 */
+.backdrop.low-quality {
+  filter: none;
+}
+
+.backdrop.high-quality {
+  filter: none;
+}
+
+.backdrop.animate,
+.logo.animate {
+  animation-duration: 0.9s !important;
+}
+
+/* 卡片左侧黑色遮罩：黑 → 透明的渐变过渡（沿用插件 gradient-overlay 元素） */
+.gradient-overlay {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.45) 30%,
+    rgba(0, 0, 0, 0) 65%
+  ) !important;
+}
+
+/* 去掉统一暗化遮罩：画面完全原色 */
+.backdrop-overlay {
+  background: transparent !important;
+}
+
+/* ---- 15.5 标题 Logo ---- */
+/* LOGO 上移 2cm（插件原版 top 为 15vh） */
+.logo-container {
+  top: calc(15vh - 2cm) !important;
+}
+
+/* 所有 LOGO 状态：无阴影，仅保留亮度（低清态保留轻微模糊） */
+.logo {
+  filter: brightness(1.25);
+}
+
+.logo.low-quality {
+  filter: brightness(1.1) blur(0.5px);
+}
+
+.logo.high-quality {
+  filter: brightness(1.3) blur(0);
+}
+
+.logo-title-fallback {
+  color: #fff !important;
+  font-weight: 700 !important;
+  letter-spacing: 0;
+}
+
+/* ---- 15.6 信息区 ----
+   间距/字号/字重等上下左右调整全部保持插件原版，仅替换配色 */
+.info-container,
+.misc-info,
+.genre,
+.date,
+.runTime,
+.plot,
+.plot-container {
+  color: #fff !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.misc-info {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.genre {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.date,
+.runTime {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.separator-icon {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* 分级标签：中性毛玻璃胶囊（保持插件原尺寸） */
+.age-rating {
+  background: rgba(24, 25, 28, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
+  padding: 1px 7px !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* 评分：中性灰（头图白字场景用白色） */
+.community-rating-star {
+  color: #fff !important;
+  font-size: 1.3em !important;
+}
+
+.star-rating-container {
+  gap: 2px !important;
+}
+
+.critic-rating {
+  font-weight: 500 !important;
+}
+
+/* 剧情简介（保持插件原尺寸与布局） */
+.plot-container {
+  text-align: left !important;
+}
+
+.plot {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  font-weight: 400 !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  max-width: 560px;
+}
+
+.constrained-plot {
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+/* ---- 15.7 操作按钮 ----
+   保持插件原始尺寸（font-size / padding / 圆角均由插件决定），
+   仅替换配色为 B站风格 */
+.button-container {
+  gap: 10px !important;
+}
+
+/* 播放按钮：B站粉主按钮（尺寸保持插件默认） */
+.play-button {
+  background: linear-gradient(180deg, var(--bili-pink), var(--bili-pink-hover)) !important;
+  color: #fff !important;
+  border: none !important;
+  font-family: var(--bili-font) !important;
+  box-shadow: 0 2px 12px var(--bili-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.play-button::before {
+  font-weight: 500 !important;
+}
+
+.play-button:hover {
+  background: linear-gradient(180deg, #FF8FAE, var(--bili-pink)) !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 0 3px var(--bili-pink-ring), 0 4px 18px var(--bili-glow) !important;
+  transform: translateY(-1px);
+}
+
+.play-button:active {
+  background: var(--bili-pink-hover) !important;
+  transform: translateY(0);
+}
+
+/* 详情按钮：保持插件 50px 圆形，仅换配色为 B站半透明 */
+.detail-button {
+  background: rgba(24, 25, 28, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.detail-button:hover {
+  background: var(--bili-pink-soft) !important;
+  border-color: var(--bili-pink) !important;
+  box-shadow: 0 0 12px var(--bili-glow);
+  opacity: 1 !important;
+}
+
+/* 收藏按钮：保持插件 50px 圆形，仅换配色 */
+.favorite-button {
+  background: rgba(24, 25, 28, 0.45) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.favorite-button:hover {
+  background: var(--bili-pink-soft) !important;
+  border-color: var(--bili-pink) !important;
+  box-shadow: 0 0 12px var(--bili-glow);
+  opacity: 1 !important;
+}
+
+.favorite-button.favorited {
+  color: var(--bili-danger) !important;
+  border-color: rgba(240, 72, 62, 0.4) !important;
+}
+
+/* 播放/暂停/音量等浮动控件 */
+.pause-button,
+.volume-toggle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.15s ease, color 0.15s ease !important;
+}
+
+.pause-button:hover,
+.volume-toggle:hover {
+  opacity: 1 !important;
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+/* ---- 15.8 指示点 Dots（保持插件尺寸，仅换配色与动效） ---- */
+.dot {
+  width: 5px !important;
+  height: 5px !important;
+  margin: 0 4px !important;
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease;
+}
+
+.dot:hover {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dot.active {
+  background-color: var(--bili-pink) !important;
+  transform: scale(1.8) !important;
+  box-shadow: 0 0 10px var(--bili-glow);
+  animation: bili-dot-pulse 2.6s ease-in-out infinite;
+}
+
+/* 激活圆点呼吸辉光 */
+@keyframes bili-dot-pulse {
+  0%, 100% { box-shadow: 0 0 6px var(--bili-glow); }
+  50% { box-shadow: 0 0 14px var(--bili-glow); }
+}
+
+/* ---- 15.9 左右箭头（保持插件原尺寸与位置，仅调配色） ---- */
+.arrow {
+  color: #fff !important;
+  transition: color 0.12s ease, opacity 0.12s ease;
+}
+
+.arrow:hover {
+  color: #fff !important;
+  opacity: 1;
+}
+
+.arrow:active {
+  opacity: 0.7;
+}
+
+.left-arrow {
+  left: 16px !important;
+}
+
+.right-arrow {
+  right: 16px !important;
+}
+
+/* ---- 15.10 视频背景模式 ---- */
+.video-player iframe {
+  border-radius: 0 !important;
+}
+
+.headerVideo {
+  filter: brightness(0.9);
+}
+
+/* ---- 15.11 自定义叠加内容（enhanced 版） ---- */
+.custom-overlay-container {
+  border-radius: var(--bili-radius-lg);
+  overflow: hidden;
+}
+
+.custom-overlay-image {
+  border-radius: var(--bili-radius-lg);
+}
+
+.custom-overlay-text {
+  color: #fff !important;
+  font-family: var(--bili-font) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- 15.12 增强版 Media Bar 设置弹窗 ---- */
+.media-bar-modal-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.media-bar-modal {
+  background: var(--bili-surface) !important;
+  color: var(--bili-text) !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius-xl) !important;
+  box-shadow: var(--bili-shadow-lg) !important;
+}
+
+.media-bar-settings-body {
+  color: var(--bili-text-2) !important;
+}
+
+.media-bar-settings-backdrop {
+  background: var(--bili-bg) !important;
+}
+
+/* 弹窗内按钮（保持插件原尺寸，仅换配色） */
+.media-bar-btn {
+  background: var(--bili-hover) !important;
+  color: var(--bili-text) !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius) !important;
+  font-family: var(--bili-font) !important;
+  font-weight: 500 !important;
+  transition: background 0.12s ease;
+}
+
+.media-bar-btn:hover {
+  background: var(--bili-active) !important;
+}
+
+.media-bar-btn-submit {
+  background: var(--bili-pink) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.media-bar-btn-submit:hover {
+  background: var(--bili-pink-hover) !important;
+}
+
+.media-bar-btn-cancel {
+  background: transparent !important;
+  color: var(--bili-text-2) !important;
+}
+
+.media-bar-btn-cancel:hover {
+  background: var(--bili-hover) !important;
+  color: var(--bili-text) !important;
+}
+
+/* 弹窗内下拉框（保持插件原尺寸，仅换配色） */
+.media-bar-select-container {
+  background: var(--bili-bg) !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius) !important;
+}
+
+.media-bar-select-label {
+  color: var(--bili-text) !important;
+  font-weight: 500 !important;
+}
+
+.media-bar-select-info,
+.media-bar-select-desc {
+  color: var(--bili-text-2) !important;
+  font-size: 12.5px !important;
+}
+
+.media-bar-select {
+  background: var(--bili-surface) !important;
+  color: var(--bili-text) !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius) !important;
+}
+
+/* 弹窗内进度条（自定义内容加载） */
+.media-bar-progress-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+}
+
+.media-bar-progress-fill {
+  background: var(--bili-pink) !important;
+  border-radius: 2px !important;
+}
+
+/* 弹窗 Tab */
+.media-bar-client-tabs {
+  border-bottom: 1px solid var(--bili-border) !important;
+}
+
+.media-bar-client-tab {
+  color: var(--bili-text-2) !important;
+  border-radius: var(--bili-radius) var(--bili-radius) 0 0 !important;
+  font-weight: 500 !important;
+  transition: color 0.12s ease;
+}
+
+.media-bar-client-tab:hover {
+  color: var(--bili-text) !important;
+}
+
+.media-bar-client-tab.active,
+.media-bar-client-tab[aria-selected='true'] {
+  color: var(--bili-text) !important;
+  box-shadow: inset 0 -2px 0 var(--bili-pink);
+}
+
+.media-bar-dropdown {
+  background: var(--bili-surface) !important;
+  color: var(--bili-text) !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius) !important;
+}
+
+.media-bar-has-counter {
+  border-radius: var(--bili-radius) !important;
+}
+
+.media-bar-github-link {
+  color: var(--bili-text) !important;
+}
+
+/* MUI 弹窗（enhanced 版使用） */
+.MuiDialog-paper {
+  background-color: var(--bili-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--bili-border-strong) !important;
+  border-radius: var(--bili-radius-xl) !important;
+  box-shadow: var(--bili-shadow-lg) !important;
+  color: var(--bili-text) !important;
+}
+
+.MuiDialog-paper .MuiTypography-root,
+.MuiDialog-paper .MuiListItemText-root {
+  color: var(--bili-text) !important;
+}
+
+.MuiDialog-paper .MuiListItemText-secondary {
+  color: var(--bili-text-2) !important;
+}
+
+.MuiDialog-paper .MuiButton-root {
+  text-transform: none !important;
+  border-radius: var(--bili-radius) !important;
+  font-family: var(--bili-font) !important;
+  font-weight: 500 !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary {
+  background-color: var(--bili-pink) !important;
+  color: #fff !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary:hover {
+  background-color: var(--bili-pink-hover) !important;
+}
+
+.MuiDialog-paper .MuiButton-text {
+  color: var(--bili-text-2) !important;
+}
+
+/* 原生 MUI 链接 / 选中文字：黑白灰体系（防 jf-palette primary 粉泄漏到文字） */
+.MuiLink-root,
+.MuiTypography-root .MuiLink-root,
+.MuiListItemButton-root:hover .MuiListItemText-root,
+.MuiMenuItem-root:hover,
+.MuiTab-root {
+  color: var(--bili-text) !important;
+}
+
+.MuiLink-root:hover {
+  color: var(--bili-text-2) !important;
+}
+
+/* ---- 15.13 焦点 / TV 遥控器模式 ---- */
+.featured-content .show-focus:focus,
+.featured-content.is-tv-focused .backdrop-container {
+  outline: 2px solid var(--bili-pink) !important;
+  outline-offset: -2px;
+}
+
+.featured-content.is-focused .backdrop-container {
+  transition: transform 0.3s ease;
+}
+
+.featured-content.is-videoplayer .backdrop {
+  filter: brightness(0.85);
+}
+
+/* ---- 15.14 移动端适配（只调整可读性，不改按钮尺寸） ---- */
+@media only screen and (max-width: 767px) {
+  .plot {
+    font-size: 13px !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .age-rating {
+    font-size: 10px !important;
+  }
+}
+
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  .backdrop,
+  .backdrop.with-video {
+    /* 圆角框模式下不叠加 mask，交给 .slide 的 border-radius + overflow 裁剪 */
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  /* 与桌面一致：不叠加暗化遮罩 */
+  .gradient-overlay {
+    background: transparent !important;
+  }
+
+  .dot.active {
+    transform: scale(1.6) !important;
+  }
+}
+
+/* ---- 15.15 头图圆角矩形框（一套规则适配所有设备）----
+   --------------------------------------------------------------
+   1) #slides-container 绝对定位，所有尺寸顶边都在 y=0：
+      藏在磨砂固定顶栏后面（不依赖顶栏高度，任何设备无边缘冲突），
+      因此只保留底部圆角；
+   2) 宽度 = 视口宽 − 2×侧边距（左右留白 0.5cm），水平居中；
+   3) 高度 = 55vh：随设备屏幕长度尺寸缩放，不做手机/横竖屏适配；
+   4) 下方板块（.homeSectionsContainer）跟随卡片底部 + 间距；
+   5) 头图内部（logo/文字/按钮）完全使用插件原版布局。
+   -------------------------------------------------------------- */
+#slides-container {
+  position: absolute !important;
+  /* 顶距（与顶栏的间距）：
+     桌面窄屏 11.25em / 宽屏 7em（见下方媒体查询），手机 0（藏顶栏后） */
+  top: calc(11.25em + var(--bili-hero-margin, 16px)) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  /* 宽度 = 视口宽 − 2×侧边距：左右留白恒为真实 0.5 厘米 */
+  width: calc(100vw - 2 * var(--bili-hero-side-margin, 0.5cm)) !important;
+  /* 高度 = 55vh：随设备屏幕长度尺寸缩短 */
+  height: 55vh !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: var(--bili-hero-radius, 16px) !important;
+  /* 无外投影，仅保留内侧 1px 细描边 */
+  box-shadow: inset 0 0 0 1px var(--bili-border) !important;
+  /* 封入独立层叠上下文：整个头图（含内部 z-index ≤5 的元素）
+     永远低于顶栏与弹幕插件弹层 */
+  z-index: 5 !important;
+}
+
+/* 宽屏：顶距 7em（避开顶栏 + 标签行） */
+@media (min-width: 75em) {
+  #slides-container {
+    top: calc(7em + var(--bili-hero-margin, 16px)) !important;
+  }
+}
+
+/* 手机：卡片下移避开顶栏（顶栏 + 标签行约 6em，另加刘海安全区），四角圆角完整 */
+@media only screen and (max-width: 767px) {
+  #slides-container {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--bili-hero-margin, 16px) + 0.5cm) !important;
+    border-radius: var(--bili-hero-radius, 16px) !important;
+  }
+
+  /* ---- 手机版内容约束（仅此断点生效，不影响桌面/平板）----
+     内容全居中：LOGO 顶部居中，评分/类型/按钮/圆点水平居中、垂直均衡，
+     全部压进 55vh 卡片内（em 间距稳定，不随手机高度溢出） */
+  #slides-container .logo-container {
+    /* 插件原版是 position:relative，bottom 会把 LOGO 顶出卡片；
+       先强制 absolute 再底部锚定，让 LOGO 紧贴评分/类型文字块上方；
+       尺寸整体放大 1cm */
+    position: absolute !important;
+    top: auto !important;
+    bottom: 13em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(62% + 1cm) !important;
+    height: calc(18% + 1cm) !important;
+  }
+
+  #slides-container .info-container {
+    top: auto !important;
+    bottom: 9.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    justify-content: center !important;
+  }
+
+  #slides-container .runTime {
+    /* 手机端防折行：保持 "1 Season" 单行，数字不跑到 Season 上面 */
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+  }
+
+  #slides-container .genre {
+    top: auto !important;
+    bottom: 7.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .plot-container {
+    display: none !important;
+  }
+
+  #slides-container .button-container {
+    top: auto !important;
+    bottom: 1.5em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .dots-container {
+    /* 圆点放在按钮上方、评分/类型下方 */
+    top: auto !important;
+    bottom: calc(3.8em + 1cm) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* ---- 板块跟随卡片底部（间距 = 底部留白 1cm）---- */
+#indexPage .homeSectionsContainer {
+  top: calc(11.25em + var(--bili-hero-margin, 16px) + 55vh + var(--bili-hero-bottom-margin, -1.5cm)) !important;
+}
+
+@media (min-width: 75em) {
+  #indexPage .homeSectionsContainer {
+    top: calc(7em + var(--bili-hero-margin, 16px) + 55vh + var(--bili-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  #indexPage .homeSectionsContainer {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--bili-hero-margin, 16px) + 0.5cm + 55vh + var(--bili-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+/* 让"卡片底部 → 我的媒体"的视觉间距恰好 = 底部留白：
+   抵消首页首个板块（我的媒体）自带的顶部内边距与标题边距
+   （.padded-top 1em + .sectionTitleContainer 1.25em ≈ 45px） */
+#indexPage .homeSectionsContainer > .verticalSection:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer-cards,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle-cards {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ---- 头图内部布局（logo / 文字 / 按钮 / 圆点）：不使用任何覆写，
+   完全采用插件原版设置 ---- */
+
+/* 头图不再做底部过渡虚化：卡片内画面干净、无淡出，
+   圆角边框直接收尾（底部不叠加任何 mask） */
+#slides-container .backdrop-container {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+#slides-container .backdrop {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* 视频模式：头图收窄为右侧 40% 并平滑淡出，避免硬边 */
+#slides-container .backdrop.with-video {
+  width: 40% !important;
+  mask-image: linear-gradient(
+    to right,
+    rgba(24, 25, 28, 1) 50%,
+    rgba(24, 25, 28, 0) 92%
+  ) !important;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(24, 25, 28, 1) 50%,
+    rgba(24, 25, 28, 0) 92%
+  ) !important;
+}
+
+#slides-container .backdrop-overlay,
+#slides-container .gradient-overlay {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* ==========================================================================
+   16. jellyfin-danmaku 弹幕插件
+   --------------------------------------------------------------------------
+   不做任何适配：完全使用插件自身默认 UI（默认层级、默认配色、默认布局）。
+   本主题不写入任何与该插件相关的 CSS 规则。
+   ========================================================================== */
+
+/* ==========================================================================
+   17. 登录页 / 启动页
+   ========================================================================== */
+.splashLogo {
+  filter: none !important;
+}
+
+.loginForm {
+  background: var(--bili-overlay) !important;
+  border: 1px solid var(--bili-divider);
+  border-radius: var(--bili-radius-xl) !important;
+  box-shadow: var(--bili-shadow-lg);
+  /* 背景已 94% 不透明，backdrop blur 几乎不可见，移除节省 GPU（性能优化） */
+}
+
+.loginForm h1 {
+  color: var(--bili-text) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+
+/* ==========================================================================
+   18. 详情页背景（B站详情页 UI 风格）
+   --------------------------------------------------------------------------
+   .itemBackdrop（40vh 媒体背景图）与 .detailLogo（LOGO）是兄弟元素。
+   B站详情页特征：
+   - 顶部 banner 轻微压暗，保证 LOGO/标题在图上可读；
+   - 底部渐变过渡到页面背景色（浅色模式 → 浅灰，深色模式 → 深灰），
+     与下方内容自然衔接；
+   - 背景图由 Jellyfin 以行内 background-image 设置，
+     只用 ::after 渐变遮罩叠加，不覆盖行内背景图；
+   - ::after 位于背景之上、进度条之下（z-index 分层）。
+   ========================================================================== */
+
+/* 顶部压暗 + 底部过渡到页面背景 */
+.itemBackdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.42) 0%,
+    rgba(0, 0, 0, 0.12) 38%,
+    rgba(0, 0, 0, 0.02) 60%,
+    var(--bili-bg) 100%
+  );
+}
+
+/* 进度条盖在渐变之上 */
+.itemBackdropProgressBar {
+  z-index: 2 !important;
+}
+
+/* LOGO：轻微提亮，在压暗的 banner 上更清晰 */
+.detailLogo {
+  filter: brightness(1.15);
+  z-index: 3;
+}
+
+/* 详情页标题区：与 banner 底部过渡衔接（B站标题白/黑随模式） */
+.detailPagePrimaryContainer {
+  position: relative;
+  z-index: 3;
+}
+
+/* 移动端：banner 更高，渐变同样适用 */
+@media all and (orientation: portrait) and (max-width: 40em) {
+  .itemBackdrop::after {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.15) 40%,
+      var(--bili-bg) 100%
+    );
+  }
+}
+
+/* ==========================================================================
+   18.5 季/集选择页（剧集库 episodesTab、季/集列表）B站适配
+   --------------------------------------------------------------------------
+   这些页面（#tvRecommendedPage / 季详情页）顶部有标签行与卡片网格。
+   补充 B站化：标签行文字黑白灰、容器背景跟随主题、卡片文字色阶。
+   ========================================================================== */
+/* 标签行（剧集/建议/即将播出等） */
+.pageWithAbsoluteTabs .sectionTabs,
+.sectionTabs {
+  color: var(--bili-text-2) !important;
+}
+
+.sectionTabs .emby-tab-button {
+  color: var(--bili-text-2) !important;
+  border-radius: var(--bili-radius) var(--bili-radius) 0 0 !important;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.sectionTabs .emby-tab-button:hover {
+  color: var(--bili-text) !important;
+  background: var(--bili-hover) !important;
+}
+
+.sectionTabs .emby-tab-button.show-focus:focus,
+.sectionTabs .emby-tab-button[aria-selected='true'],
+.sectionTabs .emby-tab-button.active {
+  color: var(--bili-text) !important;
+  box-shadow: inset 0 -2px 0 var(--bili-pink);
+}
+
+/* 标签内容区背景跟随主题 */
+.pageTabContent {
+  background: transparent !important;
+}
+
+/* 季/集卡片网格文字（黑白灰色阶） */
+#tvRecommendedPage .itemsContainer .cardText,
+#tvRecommendedPage .itemsContainer .cardText-secondary,
+.absolutePageTabContent .itemsContainer .cardText,
+.absolutePageTabContent .itemsContainer .cardText-secondary {
+  color: var(--bili-text) !important;
+}
+
+/* 季/集列表行（vertical-list） */
+#tvRecommendedPage .vertical-list .listItem,
+.absolutePageTabContent .vertical-list .listItem {
+  color: var(--bili-text) !important;
+  border-color: var(--bili-divider) !important;
+}
+
+/* ==========================================================================
+   19. 杂项 / 通用
+   ========================================================================== */
+h1, h2, h3, h4 {
+  color: var(--bili-text);
+  font-family: var(--bili-font);
+  letter-spacing: 0;
+}
+
+/* ---- 原生文字兜底（B站色板）----
+   Jellyfin 详情页 / 设置页等非 MUI 元素常带默认浅色文字，
+   在 B站浅色模式下会"白字+白底"不可见，统一兜底为 B站文字色阶。
+   大字标题 = 主色（白天黑 / 黑夜白），小字 = 灰色。 */
+.itemName,
+.itemName h1,
+.itemName h2,
+.itemName h3,
+.detailPagePrimaryContainer,
+.detailPagePrimaryContainer h1,
+.detailPagePrimaryContainer h2,
+.detailPagePrimaryContainer h3,
+.itemDetailPage,
+.paperList,
+.paperList .listItem,
+.paperList .listItemBody,
+.mediaInfoItem,
+.mediaInfoContent,
+.mediaInfoHeader,
+.metadataDetails,
+.emby-scroller .cardText,
+.inputLabel,
+.selectLabel,
+.checkboxLabel,
+.radioLabel,
+.formLabel,
+.buttonLink,
+.text,
+.muted,
+.formDialogFooter .formDialogFooterItem {
+  color: var(--bili-text) !important;
+}
+
+/* 小字（次级文字）：灰色（白天 #61666D / 黑夜 #9499A0） */
+.itemName .secondaryText,
+.detailPageSecondaryContainer,
+.mediaInfoItem .mediaInfoText,
+.paperList .listItemBody .text,
+.emby-scroller .cardText-secondary,
+.formDialogFooter .formDialogFooterItem .detail,
+.labelText,
+.text-secondary,
+.secondaryText,
+.itemSecondaryText,
+.mediaInfoText,
+.overview,
+.itemOverview {
+  color: var(--bili-text-2) !important;
+}
+
+/* 详情页标签 / 属性行 */
+.detailSection,
+.detailSection .sectionTitle,
+.attributes,
+.itemTags {
+  color: var(--bili-text) !important;
+}
+
+/* ---- 季详情页 / 集数列表 文字适配（B站黑白灰）----
+   集数标题大字 = 主色（白天黑 / 黑夜白），
+   元信息（时长/评分/结束时间）/ 集简介 = 灰色。 */
+.listItemBodyText,
+.listItemBody .listItemBodyText,
+#listChildrenCollapsible .listItemBodyText {
+  color: var(--bili-text) !important;
+  font-weight: 500 !important;
+}
+
+/* 元信息行（时长 / 评分 / 结束时间等） */
+.listItemMediaInfo,
+.listItemMediaInfo .mediaInfoItem,
+.mediaInfoItem .endsAt,
+.mediaInfoItem .starRatingContainer,
+.listItem .listItemMediaInfo {
+  color: var(--bili-text-2) !important;
+}
+
+/* 集数简介 */
+.listItem-overview,
+.listItem-bottomoverview,
+.listItemBody .secondary,
+.listItem .secondary,
+#listChildrenCollapsible .secondary,
+.detailSectionContent .secondary {
+  color: var(--bili-text-2) !important;
+}
+
+/* 评分星标：B站金 */
+.starRatingContainer .starIcon,
+.mediaInfoItem .starIcon,
+.listItem .starIcon {
+  color: #F5A623 !important;
+}
+
+/* 副标题（tagline） */
+.tagline,
+.detailSection .tagline {
+  color: var(--bili-text-2) !important;
+}
+
+/* 类型/导演/编剧/工作室 标签行 */
+.detailsGroupItem .label,
+.genresLabel,
+.directorsLabel,
+.writersLabel,
+.studiosLabel,
+.itemDetailsGroup .label {
+  color: var(--bili-text-2) !important;
+  font-weight: 500 !important;
+}
+
+.detailsGroupItem .content,
+.itemDetailsGroup .content {
+  color: var(--bili-text) !important;
+}
+
+/* 简介正文（overview 在兜底区已为灰色） */
+.detailSectionContent .overview,
+.detail-clamp-text {
+  color: var(--bili-text-2) !important;
+  line-height: 1.7 !important;
+}
+
+/* 外部链接（TMDB 等） */
+.itemExternalLinks .button-link,
+.itemExternalLinks .emby-button {
+  color: var(--bili-link) !important;
+}
+
+/* 列表行用户操作按钮（详情/已观看/收藏/更多）：中性灰 */
+.listViewUserDataButtons .paper-icon-button-light,
+.listItemButton {
+  color: var(--bili-text-2) !important;
+}
+
+.listViewUserDataButtons .paper-icon-button-light:hover,
+.listItemButton:hover {
+  color: var(--bili-text) !important;
+  background: var(--bili-hover) !important;
+}
+
+/* 详情页标题信息条（显示剧名/季名/简介/剧集信息的板块）：
+   Jellyfin 深色主题默认给 .detailRibbon 写死 rgba(32,32,32,.8) 深色半透明背景，
+   叠在顶部背景图上，白天黑夜都一样。
+   仅修改背景色 + 文字颜色（跟随 B站主题深浅色），
+   布局/边框/高度/溢出规则完全保持 Jellyfin 默认，不加任何调整。
+   白天 = 半透明白（浅灰底上区分明显）；
+   黑夜 = 比页面背景更深的深色（页面 #18191C，此区用更深色做区分）。 */
+.detailRibbon {
+  background-color: rgba(255, 255, 255, 0.82) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .detailRibbon {
+    background-color: rgba(16, 17, 21, 0.9) !important;
+  }
+}
+
+/* 信息条内的标题/元信息文字：黑白灰（白天深字 / 黑夜白字）
+   仅改文字颜色，不改任何布局/换行/溢出规则（保持 Jellyfin 默认左对齐） */
+.detailRibbon .itemName,
+.detailRibbon .parentName,
+.detailRibbon .originalTitle,
+.detailRibbon .subtitle,
+.detailRibbon .infoText {
+  color: var(--bili-text) !important;
+}
+
+.detailRibbon .itemMiscInfo,
+.detailRibbon .mediaInfoItem,
+.detailRibbon .mediaInfoText,
+.detailRibbon .starRatingContainer {
+  color: var(--bili-text-2) !important;
+}
+
+/* 信息条按钮（播放/收藏等）：B站粉主按钮 + 中性图标 */
+.detailRibbon .mainDetailButtons .detailButton {
+  color: var(--bili-text-2) !important;
+}
+
+.detailRibbon .mainDetailButtons .detailButton:hover {
+  color: var(--bili-pink) !important;
+  background: var(--bili-pink-soft) !important;
+}
+
+.detailRibbon .mainDetailButtons .btnPlay,
+.detailRibbon .mainDetailButtons .playButton {
+  color: var(--bili-pink) !important;
+}
+
+/* 影评块：B站浅灰卡片（替代 Jellyfin 默认 #222 深色） */
+.criticReview {
+  background: var(--bili-surface) !important;
+  border: 1px solid var(--bili-divider) !important;
+  border-radius: var(--bili-radius-lg) !important;
+  color: var(--bili-text) !important;
+}
+
+.criticReview .reviewerName,
+.criticReview .reviewDate {
+  color: var(--bili-text-2) !important;
+}
+
+/* 详情页主内容区：背景跟随主题（防任何默认深色残留） */
+.detailPagePrimaryContainer,
+.detailPageSecondaryContainer,
+.detailPagePrimaryContent,
+.detailSectionContent,
+.infoWrapper,
+.nameContainer,
+.itemDetailsGroup,
+.collectionItems,
+.trackSelections {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 属性值弱化 */
+.mediaInfoContent {
+  color: var(--bili-text-2) !important;
+}
+
+/* 登录/设置页次级提示 */
+.fieldDescription,
+.loginDisclaimer {
+  color: var(--bili-text-3) !important;
+}
+
+.text-warning,
+.emby-warning {
+  color: var(--bili-danger) !important;
+}
+
+.emptyState {
+  color: var(--bili-text-2) !important;
+}
+
+.loadingSpinner {
+  border-color: var(--bili-pink) !important;
+  border-top-color: transparent !important;
+}
+
+/* 电视布局 */
+.layout-tv .navMenuOption {
+  border-radius: var(--bili-radius) !important;
+}
+
+.layout-tv .cardOverlayFab {
+  border-radius: 50% !important;
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   19. 收尾
+   ========================================================================== */
+.backgroundContainer .cardPadder,
+.backgroundContainer .defaultCardBackground {
+  background-color: var(--bili-surface-2) !important;
+}
