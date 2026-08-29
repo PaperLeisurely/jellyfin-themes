@@ -1,0 +1,1950 @@
+/* ==========================================================================
+   Jellyfin · shadcn/ui 风格主题（黑白界面）
+   --------------------------------------------------------------------------
+   设计语言：完全参考 shadcn/ui（https://github.com/shadcn-ui/ui）
+   - 中性黑白灰色阶（slate 系），无彩色
+   - HSL 变量体系（background / foreground / card / primary / muted / border / ring）
+   - 0.5rem 圆角、细边框、柔和阴影
+   - 动效：150-200ms 过渡、hover 阴影提升、focus ring 光环、fade/zoom 动画
+   - 浅色：白底近黑字；深色：近黑底白字（自动跟随 prefers-color-scheme）
+   兼容：Jellyfin 10.11.11 主界面 ·
+         Media Bar 插件家族（避让内容全套继承自暗紫主题）·
+         jellyfin-danmaku（零适配，用插件默认 UI）
+   使用：Jellyfin → 设置 → 显示 → 自定义 CSS，粘贴全部内容。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 设计令牌（shadcn/ui 色板）
+   ========================================================================== */
+:root {
+  /* 画布 */
+  --sc-bg: #FFFFFF;
+  --sc-bg-grad: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  /* 表面 */
+  --sc-surface: #FFFFFF;
+  --sc-surface-2: #F8FAFC;
+  --sc-toolbar: #FFFFFF;
+  --sc-sidebar: #FFFFFF;
+  --sc-overlay: rgba(255, 255, 255, 0.92);
+  /* 文字（slate 色阶） */
+  --sc-fg: #0F172A;            /* foreground slate-900 */
+  --sc-fg-2: #475569;          /* slate-600 */
+  --sc-fg-3: #94A3B8;          /* slate-400 */
+  --sc-on-primary: #FFFFFF;
+  /* 主色：近黑（shadcn primary，非品牌色） */
+  --sc-primary: #0F172A;
+  --sc-primary-hover: #1E293B;
+  --sc-primary-soft: rgba(15, 23, 42, 0.08);
+  --sc-ring: #0F172A;
+  /* 次要 / 弱化 */
+  --sc-secondary: #F1F5F9;
+  --sc-muted: #F1F5F9;
+  --sc-muted-fg: #64748B;
+  /* 边框 */
+  --sc-border: #E2E8F0;        /* slate-200 */
+  --sc-border-strong: #CBD5E1; /* slate-300 */
+  --sc-divider: rgba(15, 23, 42, 0.08);
+  /* 交互反馈 */
+  --sc-hover: rgba(15, 23, 42, 0.05);
+  --sc-active: rgba(15, 23, 42, 0.09);
+  --sc-selected: rgba(15, 23, 42, 0.08);
+  /* 输入框 */
+  --sc-input: #F8FAFC;
+  --sc-input-focus: #FFFFFF;
+  /* 阴影（shadcn 柔和层次） */
+  --sc-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --sc-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  --sc-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.10);
+  --sc-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --sc-shadow-card-hover: 0 8px 16px rgba(15, 23, 42, 0.12);
+  /* 圆角（shadcn 默认 0.5rem） */
+  --sc-radius: 0.5rem;
+  --sc-radius-lg: 0.75rem;
+  --sc-radius-xl: 1rem;
+  --sc-radius-pill: 999px;
+  /* 滚动条 */
+  --sc-scrollbar: rgba(15, 23, 42, 0.22);
+  --sc-scrollbar-hover: rgba(15, 23, 42, 0.4);
+  /* 进度 / 危险 */
+  --sc-progress: #0F172A;
+  --sc-danger: #DC2626;
+  /* Media Bar 头图几何令牌（避让公式，深浅色共用） */
+  --sc-hero-radius: 16px;
+  --sc-hero-margin: 16px;
+  --sc-hero-side-margin: 0.5cm;
+  --sc-hero-bottom-margin: -1.5cm;
+  /* 动效时长（shadcn 150-200ms） */
+  --sc-dur: 150ms;
+  --sc-dur-2: 200ms;
+  --sc-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 字体 */
+  --sc-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 画布：近黑（shadcn dark） */
+    --sc-bg: #0B1120;
+    --sc-bg-grad: linear-gradient(180deg, #0B1120 0%, #070C18 100%);
+    /* 表面 */
+    --sc-surface: #0F172A;
+    --sc-surface-2: #1E293B;
+    --sc-toolbar: #0F172A;
+    --sc-sidebar: #0F172A;
+    --sc-overlay: rgba(11, 17, 32, 0.94);
+    /* 文字 */
+    --sc-fg: #F8FAFC;
+    --sc-fg-2: #94A3B8;
+    --sc-fg-3: #64748B;
+    --sc-on-primary: #0F172A;
+    /* 主色：近白（shadcn dark primary） */
+    --sc-primary: #F8FAFC;
+    --sc-primary-hover: #E2E8F0;
+    --sc-primary-soft: rgba(248, 250, 252, 0.10);
+    --sc-ring: #94A3B8;
+    /* 次要 / 弱化 */
+    --sc-secondary: #1E293B;
+    --sc-muted: #1E293B;
+    --sc-muted-fg: #94A3B8;
+    /* 边框 */
+    --sc-border: #1E293B;
+    --sc-border-strong: #334155;
+    --sc-divider: rgba(248, 250, 252, 0.08);
+    /* 交互反馈 */
+    --sc-hover: rgba(248, 250, 252, 0.06);
+    --sc-active: rgba(248, 250, 252, 0.10);
+    --sc-selected: rgba(248, 250, 252, 0.10);
+    /* 输入框 */
+    --sc-input: #1E293B;
+    --sc-input-focus: #1E293B;
+    /* 阴影 */
+    --sc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --sc-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+    --sc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --sc-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --sc-shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.5);
+    /* 滚动条 */
+    --sc-scrollbar: rgba(248, 250, 252, 0.22);
+    --sc-scrollbar-hover: rgba(248, 250, 252, 0.4);
+    /* 进度 / 危险 */
+    --sc-progress: #F8FAFC;
+    --sc-danger: #EF4444;
+  }
+}
+
+/* ==========================================================================
+   1.5 Jellyfin 原生 palette 变量桥接（黑白界面）
+   --------------------------------------------------------------------------
+   Jellyfin 原生组件（MUI 等）通过 --jf-palette-* 取色，桥接为黑白灰，
+   让所有原生 UI 自动跟随 shadcn 色板。
+   ========================================================================== */
+:root {
+  --jf-palette-text-primary: #0F172A;
+  --jf-palette-text-secondary: #475569;
+  --jf-palette-text-primaryChannel: 15 23 42;
+  --jf-palette-text-secondaryChannel: 71 85 105;
+  --jf-palette-text-disabled: rgba(15, 23, 42, 0.4);
+  --jf-palette-text-icon: rgba(15, 23, 42, 0.45);
+  --jf-palette-background-default: #F8FAFC;
+  --jf-palette-background-paper: #FFFFFF;
+  --jf-palette-background-defaultChannel: 248 250 252;
+  --jf-palette-background-paperChannel: 255 255 255;
+  --jf-palette-primary-main: #0F172A;
+  --jf-palette-primary-dark: #1E293B;
+  --jf-palette-primary-light: #334155;
+  --jf-palette-primary-contrastText: #FFFFFF;
+  --jf-palette-primary-mainChannel: 15 23 42;
+  --jf-palette-primary-darkChannel: 30 41 59;
+  --jf-palette-primary-lightChannel: 51 65 85;
+  --jf-palette-primary-contrastTextChannel: 255 255 255;
+  --jf-palette-secondary-main: #64748B;
+  --jf-palette-secondary-contrastText: #FFFFFF;
+  --jf-palette-secondary-mainChannel: 100 116 139;
+  --jf-palette-error-main: #DC2626;
+  --jf-palette-error-light: #EF4444;
+  --jf-palette-error-contrastText: #FFFFFF;
+  --jf-palette-error-mainChannel: 220 38 38;
+  --jf-palette-AppBar-defaultBg: #FFFFFF;
+  --jf-palette-AppBar-transparentBg: rgba(255, 255, 255, 0.85);
+  --jf-palette-AppBar-gradient: none;
+  --jf-palette-divider: rgba(15, 23, 42, 0.08);
+  --jf-palette-dividerChannel: 15 23 42;
+  --jf-palette-action-hover: rgba(15, 23, 42, 0.05);
+  --jf-palette-action-focus: rgba(15, 23, 42, 0.08);
+  --jf-palette-action-selectedOpacity: 0.1;
+  --jf-palette-action-active: #0F172A;
+  --jf-palette-action-activeChannel: 15 23 42;
+  --jf-palette-action-selected: rgba(15, 23, 42, 0.08);
+  --jf-palette-action-selectedChannel: 15 23 42;
+  --jf-palette-action-disabled: rgba(15, 23, 42, 0.3);
+  --jf-palette-action-disabledBackground: rgba(15, 23, 42, 0.1);
+  --jf-palette-action-hoverOpacity: 0.05;
+  --jf-palette-action-focusOpacity: 0.08;
+  --jf-palette-action-activatedOpacity: 0.15;
+  --jf-palette-action-disabledOpacity: 0.38;
+  --jf-palette-common-black: #000000;
+  --jf-palette-common-background: #FFFFFF;
+  --jf-palette-common-onBackground: #0F172A;
+  --jf-palette-common-backgroundChannel: 255 255 255;
+  --jf-palette-common-onBackgroundChannel: 15 23 42;
+  --jf-palette-FilledInput-bg: #F8FAFC;
+  --jf-palette-FilledInput-borderColor: #E2E8F0;
+  --jf-palette-FilledInput-hoverBg: #F1F5F9;
+  --jf-palette-FilledInput-disabledBg: #F8FAFC;
+  --jf-palette-Button-inheritContainedBg: #FFFFFF;
+  --jf-palette-Button-inheritContainedHoverBg: #F8FAFC;
+  --jf-palette-SnackbarContent-bg: #0F172A;
+  --jf-palette-SnackbarContent-color: #FFFFFF;
+  --jf-palette-Alert-infoFilledBg: #475569;
+  --jf-palette-Alert-infoFilledColor: #FFFFFF;
+  --jf-palette-common-white: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --jf-palette-text-primary: #F8FAFC;
+    --jf-palette-text-secondary: #94A3B8;
+    --jf-palette-text-primaryChannel: 248 250 252;
+    --jf-palette-text-secondaryChannel: 148 163 184;
+    --jf-palette-text-disabled: rgba(248, 250, 252, 0.4);
+    --jf-palette-text-icon: rgba(248, 250, 252, 0.45);
+    --jf-palette-background-default: #0B1120;
+    --jf-palette-background-paper: #0F172A;
+    --jf-palette-background-defaultChannel: 11 17 32;
+    --jf-palette-background-paperChannel: 15 23 42;
+    --jf-palette-primary-main: #F8FAFC;
+    --jf-palette-primary-dark: #E2E8F0;
+    --jf-palette-primary-light: #FFFFFF;
+    --jf-palette-primary-contrastText: #0F172A;
+    --jf-palette-primary-mainChannel: 248 250 252;
+    --jf-palette-primary-darkChannel: 226 232 240;
+    --jf-palette-primary-lightChannel: 255 255 255;
+    --jf-palette-primary-contrastTextChannel: 15 23 42;
+    --jf-palette-secondary-main: #94A3B8;
+    --jf-palette-secondary-contrastText: #0F172A;
+    --jf-palette-secondary-mainChannel: 148 163 184;
+    --jf-palette-error-main: #EF4444;
+    --jf-palette-error-light: #F87171;
+    --jf-palette-error-contrastText: #FFFFFF;
+    --jf-palette-error-mainChannel: 239 68 68;
+    --jf-palette-AppBar-defaultBg: #0F172A;
+    --jf-palette-AppBar-transparentBg: rgba(11, 17, 32, 0.85);
+    --jf-palette-AppBar-gradient: none;
+    --jf-palette-divider: rgba(248, 250, 252, 0.08);
+    --jf-palette-dividerChannel: 248 250 252;
+    --jf-palette-action-hover: rgba(248, 250, 252, 0.06);
+    --jf-palette-action-focus: rgba(248, 250, 252, 0.10);
+    --jf-palette-action-selectedOpacity: 0.12;
+    --jf-palette-action-active: #F8FAFC;
+    --jf-palette-action-activeChannel: 248 250 252;
+    --jf-palette-action-selected: rgba(248, 250, 252, 0.10);
+    --jf-palette-action-selectedChannel: 248 250 252;
+    --jf-palette-action-disabled: rgba(248, 250, 252, 0.3);
+    --jf-palette-action-disabledBackground: rgba(248, 250, 252, 0.1);
+    --jf-palette-action-hoverOpacity: 0.06;
+    --jf-palette-action-focusOpacity: 0.10;
+    --jf-palette-action-activatedOpacity: 0.18;
+    --jf-palette-action-disabledOpacity: 0.38;
+    --jf-palette-common-background: #0F172A;
+    --jf-palette-common-onBackground: #F8FAFC;
+    --jf-palette-common-backgroundChannel: 15 23 42;
+    --jf-palette-common-onBackgroundChannel: 248 250 252;
+    --jf-palette-FilledInput-bg: #1E293B;
+    --jf-palette-FilledInput-borderColor: #334155;
+    --jf-palette-FilledInput-hoverBg: #1E293B;
+    --jf-palette-FilledInput-disabledBg: #1E293B;
+    --jf-palette-Button-inheritContainedBg: #0F172A;
+    --jf-palette-Button-inheritContainedHoverBg: #1E293B;
+    --jf-palette-SnackbarContent-bg: #F8FAFC;
+    --jf-palette-SnackbarContent-color: #0F172A;
+    --jf-palette-Alert-infoFilledBg: #334155;
+    --jf-palette-Alert-infoFilledColor: #F8FAFC;
+  }
+}
+
+/* ==========================================================================
+   2. 全局基础
+   ========================================================================== */
+/* 不设置 font-size：Jellyfin html 默认 20px(1080p)/27px */
+html {
+  background: var(--sc-bg);
+  color: var(--sc-fg);
+  font-family: var(--sc-font);
+}
+
+body {
+  background: var(--sc-bg-grad);
+  background-attachment: fixed;
+  color: var(--sc-fg);
+  font-family: var(--sc-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景容器：保留 Jellyfin 默认行为，只保证底色一致 */
+.backgroundContainer,
+#appBackground {
+  background-color: var(--sc-bg) !important;
+}
+
+::selection {
+  background: var(--sc-primary-soft);
+  color: var(--sc-fg);
+}
+
+a {
+  color: var(--sc-fg) !important;
+}
+
+a:hover {
+  color: var(--sc-fg-2) !important;
+}
+
+/* ==========================================================================
+   3. 滚动条（细滚动条）
+   ========================================================================== */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sc-scrollbar);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--sc-scrollbar-hover);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sc-scrollbar) transparent;
+}
+
+/* ==========================================================================
+   4. 顶栏（shadcn 顶部导航：白底 + 底部细边框）
+   ========================================================================== */
+html:not(.layout-tv) .skinHeader:not(.osdHeader) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 999 !important;
+  contain: none !important;
+  background: var(--sc-toolbar) !important;
+  border-bottom: 1px solid var(--sc-border);
+  color: var(--sc-fg);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.skinHeader:not(.osdHeader) .headerText,
+.skinHeader:not(.osdHeader) .pageTitle {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--sc-fg-2) !important;
+  border-radius: var(--sc-radius) !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.skinHeader:not(.osdHeader) .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader:not(.osdHeader) .emby-button:not(.headerUserButton):not(.headerUserButtonRound):hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+/* 播放器 OSD 顶栏：保持 Jellyfin 默认深色渐变遮罩（不磨糊弹幕） */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   5. 侧边栏 / 抽屉（shadcn 侧边导航：选中项浅灰底）
+   ========================================================================== */
+#mainDrawer,
+.mainDrawer {
+  background: var(--sc-sidebar) !important;
+  box-shadow: 1px 0 0 var(--sc-border);
+  color: var(--sc-fg-2);
+}
+
+.sidebarHeader {
+  color: var(--sc-fg) !important;
+}
+
+.sidebarLogo {
+  filter: none !important;
+}
+
+.navMenuOption {
+  color: var(--sc-fg-2) !important;
+  border-radius: var(--sc-radius) !important;
+  margin-right: 8px !important;
+  margin-left: 8px !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.navMenuOption:hover {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+}
+
+.navMenuOption.selected,
+.navMenuOption.selectable.selected,
+.navMenuOption.selectable:focus {
+  background: var(--sc-selected) !important;
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+}
+
+.sidebarFooter {
+  color: var(--sc-fg-3) !important;
+  border-top: 1px solid var(--sc-border);
+}
+
+/* 打开抽屉时的遮罩 */
+.tmla-mask.backdrop {
+  background: rgba(11, 17, 32, 0.4) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ==========================================================================
+   6. 区块标题
+   ========================================================================== */
+.sectionTitle,
+.sectionTitleText,
+.sectionTitleContainer .sectionTitle,
+.sectionTitle-cards,
+.sectionTitleContainer-cards .sectionTitle-cards,
+.pageTitle {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+.sectionTitleContainer:hover .sectionTitle,
+.sectionTitleContainer-cards:hover .sectionTitle-cards {
+  color: var(--sc-fg) !important;
+}
+
+/* ==========================================================================
+   7. 卡片（shadcn 卡片：白底 + 细边框 + hover 阴影提升）
+   --------------------------------------------------------------------------
+   - 0.5rem 圆角、1px 细边框
+   - hover：阴影提升 + 图片微缩放（150-200ms 过渡）
+   ========================================================================== */
+.cardBox {
+  border-radius: var(--sc-radius);
+}
+
+.cardScalable {
+  position: relative;
+  border-radius: var(--sc-radius);
+  overflow: hidden;
+  transition: box-shadow var(--sc-dur-2) var(--sc-ease);
+}
+
+.cardImageContainer,
+.chapterCardImageContainer {
+  background-color: transparent !important;
+  border-radius: var(--sc-radius);
+  overflow: hidden;
+}
+
+.cardImage {
+  border-radius: var(--sc-radius);
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px var(--sc-border);
+}
+
+.cardImageContainer {
+  transition: transform 0.5s cubic-bezier(0.3, 2.6, 0.6, 1), filter 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px var(--sc-border);
+}
+
+.cardPadder {
+  background-color: var(--sc-surface-2) !important;
+}
+
+.cardBox .cardPadder,
+.cardBox:not(.visualCardBox) .cardPadder,
+.cardScalable .cardPadder,
+.cardPadder-portrait,
+.cardPadder-overflowPortrait,
+.cardPadder-overflowBackdrop,
+.cardPadder-square,
+.cardPadder-overflowSquare,
+.cardPadder-banner,
+.cardPadder-backdrop,
+.cardPadder-mixedBackdrop {
+  background-color: var(--sc-surface-2) !important;
+}
+
+.defaultCardBackground,
+.cardContent:not(.defaultCardBackground) {
+  background-color: var(--sc-surface-2) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    box-shadow: var(--sc-shadow-card-hover);
+  }
+
+  .card:hover .cardImage,
+  .card:hover .cardImageContainer {
+    transition: transform var(--sc-dur-2) var(--sc-ease), filter var(--sc-dur) var(--sc-ease),
+      box-shadow var(--sc-dur) var(--sc-ease);
+    transform: scale(1.05);
+    filter: brightness(1.02);
+    box-shadow: inset 0 0 0 1px var(--sc-border-strong);
+  }
+
+  .card:hover .cardBox {
+    transform: translateY(-2px);
+  }
+}
+
+.cardText {
+  color: var(--sc-fg) !important;
+  font-weight: 500 !important;
+}
+
+.cardText:hover {
+  color: var(--sc-fg) !important;
+}
+
+.cardText-secondary,
+.cardText .cardText-secondary {
+  color: var(--sc-fg-2) !important;
+  font-weight: 400 !important;
+}
+
+.listItemImage {
+  border-radius: var(--sc-radius);
+}
+
+.cardOverlayFab {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--sc-shadow-md) !important;
+  transition: background var(--sc-dur) var(--sc-ease), transform var(--sc-dur) var(--sc-ease);
+}
+
+.cardOverlayFab:hover {
+  background: var(--sc-primary-hover) !important;
+  transform: scale(1.05);
+}
+
+.cardOverlayFab:active {
+  transform: scale(0.9) !important;
+}
+
+.videoIndicator,
+.cardIndicators .videoIndicator {
+  background: rgba(15, 23, 42, 0.75) !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.age-rating {
+  background: var(--sc-surface-2) !important;
+  color: var(--sc-fg-2) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: 4px !important;
+}
+
+/* ==========================================================================
+   8. 按钮（shadcn 三变体：default 近黑 / outline 边框 / ghost 透明）
+   ========================================================================== */
+.emby-button {
+  color: var(--sc-fg) !important;
+  border-radius: var(--sc-radius) !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease),
+    box-shadow var(--sc-dur) var(--sc-ease);
+}
+
+.emby-button:hover {
+  background: var(--sc-hover) !important;
+}
+
+/* default：主色（浅色近黑 / 深色近白） */
+.emby-button.raised,
+.emby-button.raised.primary,
+.btn-primary,
+.button-submit,
+.btnSubmit {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-radius: var(--sc-radius) !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+  font-weight: 500 !important;
+}
+
+.emby-button.raised:hover,
+.emby-button.raised.primary:hover,
+.btn-primary:hover,
+.button-submit:hover,
+.btnSubmit:hover {
+  background: var(--sc-primary-hover) !important;
+  color: var(--sc-on-primary) !important;
+  box-shadow: var(--sc-shadow-md) !important;
+}
+
+/* ghost */
+.emby-button.accent {
+  color: var(--sc-fg) !important;
+  background: transparent !important;
+}
+
+.emby-button.accent:hover {
+  background: var(--sc-hover) !important;
+}
+
+/* outline */
+.emby-button.outline,
+.emby-button[data-variant='outline'] {
+  border: 1px solid var(--sc-border-strong) !important;
+  background: transparent !important;
+  color: var(--sc-fg) !important;
+}
+
+.emby-button.outline:hover {
+  background: var(--sc-hover) !important;
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: var(--sc-fg-2) !important;
+  border-radius: var(--sc-radius) !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):hover:not(:disabled) {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound):focus:not(:disabled),
+.paper-icon-button-light:not(.headerUserButton):not(.headerUserButtonRound).show-focus:focus {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+/* focus ring（shadcn：2px ring + offset） */
+.show-focus:focus,
+.emby-button:focus-visible,
+.paper-icon-button-light:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--sc-bg), 0 0 0 4px var(--sc-ring) !important;
+}
+
+/* ==========================================================================
+   9. 输入框 / 下拉 / 滑块（shadcn 输入框：边框 + focus ring）
+   ========================================================================== */
+.emby-input,
+.emby-textarea,
+.inputContainer input {
+  background: var(--sc-input) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  color: var(--sc-fg) !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  box-shadow: none !important;
+  transition: border-color var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
+}
+
+.emby-input:hover,
+.emby-textarea:hover,
+.inputContainer input:hover {
+  background: var(--sc-input-focus) !important;
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.inputContainer input:focus {
+  background: var(--sc-input-focus) !important;
+  border-color: var(--sc-ring) !important;
+  box-shadow: 0 0 0 2px var(--sc-bg), 0 0 0 4px var(--sc-ring) !important;
+  outline: none !important;
+}
+
+.emby-select,
+.selectContainer select {
+  background: var(--sc-input) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  color: var(--sc-fg) !important;
+  box-shadow: none !important;
+}
+
+.emby-select:focus {
+  border-color: var(--sc-ring) !important;
+  box-shadow: 0 0 0 2px var(--sc-bg), 0 0 0 4px var(--sc-ring) !important;
+}
+
+input[is="emby-slider"],
+input[type="range"] {
+  accent-color: var(--sc-progress);
+}
+
+.emby-slider-container .emby-slider::-webkit-slider-runnable-track {
+  background: var(--sc-border) !important;
+}
+
+/* ==========================================================================
+   10. 对话框 / 弹窗 / 操作菜单（shadcn dialog：缩放淡入 + 细边框）
+   ========================================================================== */
+.dialog,
+.dialog.animated-dialog,
+.formDialog {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border-radius: var(--sc-radius-lg) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+  border: 1px solid var(--sc-border);
+}
+
+/* shadcn 动效：弹窗 fade + zoom */
+.dialog.animated-dialog {
+  animation: sc-dialog-in var(--sc-dur-2) var(--sc-ease);
+}
+
+@keyframes sc-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dialog-backdrop {
+  background: rgba(11, 17, 32, 0.5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.formDialogHeader {
+  background: transparent !important;
+  color: var(--sc-fg) !important;
+  border-bottom: 1px solid var(--sc-border) !important;
+}
+
+.formDialogHeaderTitle {
+  font-weight: 600 !important;
+}
+
+.formDialogFooter {
+  background: transparent !important;
+  border-top: 1px solid var(--sc-border) !important;
+}
+
+.paper-list-container {
+  background: var(--sc-surface) !important;
+  border-radius: var(--sc-radius) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border);
+}
+
+.listItem {
+  color: var(--sc-fg) !important;
+  border-radius: var(--sc-radius);
+}
+
+.listItem:hover {
+  background: var(--sc-hover) !important;
+}
+
+.listItem:focus {
+  background: var(--sc-hover) !important;
+}
+
+.checkboxOutline {
+  border-color: var(--sc-fg-3) !important;
+}
+
+.checkbox:checked + .checkboxOutline {
+  background: var(--sc-primary) !important;
+  border-color: var(--sc-primary) !important;
+}
+
+.checkbox:checked + .checkboxOutline::after {
+  border-color: var(--sc-on-primary) !important;
+}
+
+.radioOutline {
+  border-color: var(--sc-fg-3) !important;
+}
+
+.radio:checked + .radioOutline {
+  border-color: var(--sc-primary) !important;
+}
+
+.radio:checked + .radioOutline::after {
+  background: var(--sc-primary) !important;
+}
+
+/* ==========================================================================
+   11. 列表
+   ========================================================================== */
+.listView .listItem {
+  background: transparent !important;
+}
+
+.listView .listItem:hover {
+  background: var(--sc-hover) !important;
+  border-radius: var(--sc-radius);
+}
+
+.listItem:focus,
+.listItem.selected {
+  background: var(--sc-selected) !important;
+  color: var(--sc-fg) !important;
+}
+
+/* ==========================================================================
+   12. 正在播放栏（shadcn 底栏：白底 + 顶部细线）
+   ========================================================================== */
+.nowPlayingBar {
+  background: var(--sc-toolbar) !important;
+  border-top: 1px solid var(--sc-border);
+  color: var(--sc-fg) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.nowPlayingBarTop {
+  background: var(--sc-progress) !important;
+  opacity: 0.9;
+}
+
+.nowPlayingBarText,
+.nowPlayingBarTitle,
+.nowPlayingBarSubTitle {
+  color: var(--sc-fg) !important;
+}
+
+.nowPlayingBarSubTitle {
+  color: var(--sc-fg-2) !important;
+}
+
+.nowPlayingBar .mediaButton {
+  color: var(--sc-fg-2) !important;
+}
+
+.nowPlayingBar .mediaButton:hover {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.nowPlayingBar .playPauseButton {
+  color: var(--sc-on-primary) !important;
+  background: var(--sc-primary) !important;
+  border-radius: 50% !important;
+}
+
+.nowPlayingBar .playPauseButton:hover {
+  background: var(--sc-primary-hover) !important;
+}
+
+.nowPlayingBarPositionSlider::-webkit-slider-thumb {
+  background: var(--sc-progress) !important;
+  border-radius: 50% !important;
+}
+
+/* ==========================================================================
+   13. 移动端底部导航
+   ========================================================================== */
+.appfooter {
+  background: var(--sc-toolbar) !important;
+  border-top: 1px solid var(--sc-border);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.appfooter .emby-button {
+  color: var(--sc-fg-2) !important;
+}
+
+.appfooter .emby-button:hover,
+.appfooter .emby-button.show-focus:focus {
+  color: var(--sc-fg) !important;
+  background: var(--sc-hover) !important;
+}
+
+.appfooter .emby-button.active {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   14. 播放器 OSD（仅颜色适配，布局/效果保持 Jellyfin 默认）
+   --------------------------------------------------------------------------
+   播放器界面去除多余效果，恢复 Jellyfin 默认布局与效果，只保留：
+   - 文字颜色（白/浅灰）
+   - 按钮颜色（播放按钮近黑/近白、图标白）
+   - UI 颜色（进度条/音量条主色）
+   - 兼容性内容（.osdHeader 排除、头像排除等）
+   视频画面保持默认黑色衬底。
+   ========================================================================== */
+
+/* 14.1 顶部标题栏：Jellyfin 默认渐晕 + 白色文字 */
+.skinHeader.osdHeader {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.skinHeader.osdHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound),
+.skinHeader.osdHeader .emby-button:not(.headerUserButton):not(.headerUserButtonRound) {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.skinHeader.osdHeader .headerButton:not(.headerUserButton):not(.headerUserButtonRound):hover,
+.skinHeader.osdHeader .emby-button:not(.headerUserButton):not(.headerUserButtonRound):hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #fff !important;
+}
+
+.skinHeader.osdHeader .osdTitle,
+.skinHeader.osdHeader .headerText {
+  color: #fff !important;
+  font-weight: 500 !important;
+}
+
+/* 14.2 底部控制栏：Jellyfin 默认渐晕 + 白色文字 */
+.videoOsdBottom {
+  background: linear-gradient(
+    0deg,
+    rgba(16, 16, 16, 0.75) 0%,
+    rgba(16, 16, 16, 0) 100%
+  ) !important;
+  color: #fff;
+}
+
+.videoOsdBottom-hidden {
+  background: transparent !important;
+}
+
+/* 14.3 控制按钮（白色图标） */
+.osdControls .paper-icon-button-light {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 50% !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.osdControls .paper-icon-button-light:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #fff !important;
+}
+
+/* 14.4 播放/暂停按钮：仅主色（颜色），无阴影/缩放动效 */
+.videoOsdBottom .btnPause,
+.videoOsdBottom .playPauseButton {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-radius: 50% !important;
+}
+
+.videoOsdBottom .btnPause:hover,
+.videoOsdBottom .playPauseButton:hover {
+  background: var(--sc-primary-hover) !important;
+}
+
+/* 14.5 进度条（主色） */
+.mdl-slider::-webkit-slider-thumb {
+  background: var(--sc-progress) !important;
+}
+
+.mdl-slider::-moz-range-thumb {
+  background: var(--sc-progress) !important;
+}
+
+.mdl-slider-background-flex {
+  background: rgba(255, 255, 255, 0.35) !important;
+  height: 0.2em !important;
+}
+
+.mdl-slider-background-lower {
+  background-color: var(--sc-progress) !important;
+}
+
+.mdl-slider-background-upper {
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* 14.6 音量条 */
+.osdVolumeSlider .mdl-slider::-webkit-slider-thumb {
+  background: var(--sc-progress) !important;
+}
+
+.osdVolumeSlider .mdl-slider-background-lower {
+  background-color: var(--sc-progress) !important;
+}
+
+/* 14.7 时间 / 文字信息（白色） */
+.osdTextContainer,
+.osdTimeText,
+.endsAtText,
+.osdTitle,
+.osdSecondaryMediaInfo {
+  color: #fff !important;
+}
+
+.osdTextContainer-secondary {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 14.8 视频画面容器（默认黑色衬底） */
+.videoPlayerContainer {
+  background: #000 !important;
+}
+
+/* 14.9 播放器弹窗 / 设置菜单（仅配色） */
+.osdSettingsDialog .dialog,
+.playbackSettings .dialog {
+  background: rgba(11, 17, 32, 0.92) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: var(--sc-radius-lg) !important;
+}
+
+.osdSettingsDialog .paper-list-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   15. ★ Media Bar 插件 · 完整兼容区（避让内容全套继承暗紫主题）★
+   --------------------------------------------------------------------------
+   覆盖插件：IAmParadox27 / MakD（slideshowpure）/ CodeDevMLH enhanced。
+   避让原则：保持插件默认几何/尺寸，只换配色；布局公式（55vh 头图、
+   LOGO 上移 2cm、移动端居中）原样保留。
+   ========================================================================== */
+
+/* 15.1 字体与文本基线 */
+.featured-content,
+.featured-content * {
+  font-family: var(--sc-font) !important;
+}
+
+/* 15.2 加载屏 */
+.bar-loading {
+  background-color: var(--sc-bg) !important;
+}
+
+.bar-loading .splashLogo {
+  filter: brightness(1.1);
+}
+
+.bar-loading h1 div {
+  filter: brightness(1.15);
+}
+
+.progress-container {
+  border-radius: 2px;
+  overflow: visible;
+}
+
+.progress-bar {
+  background: var(--sc-progress) !important;
+  border-radius: 2px !important;
+}
+
+.unfilled-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+}
+
+/* 15.3 主容器（保持插件默认几何，无覆写） */
+
+/* 15.4 背景与遮罩 */
+.backdrop {
+  border-radius: 0 !important;
+  object-position: center 20% !important;
+}
+
+.backdrop.low-quality {
+  filter: none;
+}
+
+.backdrop.high-quality {
+  filter: none;
+}
+
+.backdrop.animate,
+.logo.animate {
+  animation-duration: 0.9s !important;
+}
+
+/* 左侧黑色渐变遮罩（保证白色文字可读） */
+.gradient-overlay {
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.45) 30%,
+    rgba(0, 0, 0, 0) 65%
+  ) !important;
+}
+
+/* 去掉统一暗化遮罩：画面完全原色 */
+.backdrop-overlay {
+  background: transparent !important;
+}
+
+/* 15.5 标题 Logo（上移 2cm） */
+.logo-container {
+  top: calc(15vh - 2cm) !important;
+}
+
+.logo {
+  filter: brightness(1.25);
+}
+
+.logo.low-quality {
+  filter: brightness(1.1) blur(0.5px);
+}
+
+.logo.high-quality {
+  filter: brightness(1.3) blur(0);
+}
+
+.logo-title-fallback {
+  color: #fff !important;
+  font-weight: 700 !important;
+  letter-spacing: 0;
+}
+
+/* 15.6 信息区（白色，叠加在图片上） */
+.info-container,
+.misc-info,
+.genre,
+.date,
+.runTime,
+.plot,
+.plot-container {
+  color: #fff !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.misc-info {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.genre {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.date,
+.runTime {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.separator-icon {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.age-rating {
+  background: rgba(11, 17, 32, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
+  padding: 1px 7px !important;
+}
+
+/* 评分星标：中性白/灰 */
+.community-rating-star {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1.3em !important;
+}
+
+.star-rating-container {
+  gap: 2px !important;
+}
+
+.critic-rating {
+  font-weight: 500 !important;
+}
+
+.plot-container {
+  text-align: left !important;
+}
+
+.plot {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  font-weight: 400 !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  max-width: 560px;
+}
+
+.constrained-plot {
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+/* 15.7 操作按钮（保持插件原尺寸，仅换配色） */
+.button-container {
+  gap: 10px !important;
+}
+
+.play-button {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border: none !important;
+  font-family: var(--sc-font) !important;
+  box-shadow: var(--sc-shadow-md) !important;
+  transition: background var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
+}
+
+.play-button::before {
+  font-weight: 500 !important;
+}
+
+.play-button:hover {
+  background: var(--sc-primary-hover) !important;
+  opacity: 1 !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+}
+
+.play-button:active {
+  background: var(--sc-primary-hover) !important;
+}
+
+.detail-button {
+  background: rgba(11, 17, 32, 0.45) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  transition: background var(--sc-dur) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease);
+}
+
+.detail-button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+.favorite-button {
+  background: rgba(11, 17, 32, 0.45) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease),
+    border-color var(--sc-dur) var(--sc-ease);
+}
+
+.favorite-button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+.favorite-button.favorited {
+  color: var(--sc-danger) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.pause-button,
+.volume-toggle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 0.7 !important;
+  transition: opacity var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease) !important;
+}
+
+.pause-button:hover,
+.volume-toggle:hover {
+  opacity: 1 !important;
+  color: #fff !important;
+}
+
+/* 15.8 指示点 Dots（保持插件尺寸） */
+.dot {
+  width: 5px !important;
+  height: 5px !important;
+  margin: 0 4px !important;
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transition: background-color var(--sc-dur-2) var(--sc-ease), transform var(--sc-dur-2) var(--sc-ease);
+}
+
+.dot:hover {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dot.active {
+  background-color: #fff !important;
+  transform: scale(1.8) !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* 15.9 左右箭头（保持插件原位置） */
+.arrow {
+  color: #fff !important;
+  transition: color var(--sc-dur) var(--sc-ease), opacity var(--sc-dur) var(--sc-ease);
+}
+
+.arrow:hover {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 0.9;
+}
+
+.arrow:active {
+  opacity: 0.7;
+}
+
+.left-arrow {
+  left: 16px !important;
+}
+
+.right-arrow {
+  right: 16px !important;
+}
+
+/* 15.10 视频背景模式 */
+.video-player iframe {
+  border-radius: 0 !important;
+}
+
+.headerVideo {
+  filter: brightness(0.9);
+}
+
+/* 15.11 自定义叠加内容（enhanced 版） */
+.custom-overlay-container {
+  border-radius: var(--sc-radius-lg);
+  overflow: hidden;
+}
+
+.custom-overlay-image {
+  border-radius: var(--sc-radius-lg);
+}
+
+.custom-overlay-text {
+  color: #fff !important;
+  font-family: var(--sc-font) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* 15.12 增强版 Media Bar 设置弹窗 */
+.media-bar-modal-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.media-bar-modal {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius-lg) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+}
+
+.media-bar-settings-body {
+  color: var(--sc-fg-2) !important;
+}
+
+.media-bar-settings-backdrop {
+  background: var(--sc-bg) !important;
+}
+
+.media-bar-btn {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius) !important;
+  font-family: var(--sc-font) !important;
+  font-weight: 500 !important;
+  transition: background var(--sc-dur) var(--sc-ease);
+}
+
+.media-bar-btn:hover {
+  background: var(--sc-active) !important;
+}
+
+.media-bar-btn-submit {
+  background: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+  border-color: transparent !important;
+}
+
+.media-bar-btn-submit:hover {
+  background: var(--sc-primary-hover) !important;
+}
+
+.media-bar-btn-cancel {
+  background: transparent !important;
+  color: var(--sc-fg-2) !important;
+}
+
+.media-bar-btn-cancel:hover {
+  background: var(--sc-hover) !important;
+  color: var(--sc-fg) !important;
+}
+
+.media-bar-select-container {
+  background: var(--sc-bg) !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.media-bar-select-label {
+  color: var(--sc-fg) !important;
+  font-weight: 500 !important;
+}
+
+.media-bar-select-info,
+.media-bar-select-desc {
+  color: var(--sc-fg-2) !important;
+  font-size: 12.5px !important;
+}
+
+.media-bar-select {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.media-bar-progress-bar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+}
+
+.media-bar-progress-fill {
+  background: var(--sc-progress) !important;
+  border-radius: 2px !important;
+}
+
+.media-bar-client-tabs {
+  border-bottom: 1px solid var(--sc-border) !important;
+}
+
+.media-bar-client-tab {
+  color: var(--sc-fg-2) !important;
+  border-radius: var(--sc-radius) var(--sc-radius) 0 0 !important;
+  font-weight: 500 !important;
+  transition: color var(--sc-dur) var(--sc-ease);
+}
+
+.media-bar-client-tab:hover {
+  color: var(--sc-fg) !important;
+}
+
+.media-bar-client-tab.active,
+.media-bar-client-tab[aria-selected='true'] {
+  color: var(--sc-fg) !important;
+  box-shadow: inset 0 -2px 0 var(--sc-primary);
+}
+
+.media-bar-dropdown {
+  background: var(--sc-surface) !important;
+  color: var(--sc-fg) !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius) !important;
+}
+
+.media-bar-has-counter {
+  border-radius: var(--sc-radius) !important;
+}
+
+.media-bar-github-link {
+  color: var(--sc-fg-2) !important;
+}
+
+/* MUI 弹窗（enhanced 版使用） */
+.MuiDialog-paper {
+  background-color: var(--sc-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--sc-border-strong) !important;
+  border-radius: var(--sc-radius-lg) !important;
+  box-shadow: var(--sc-shadow-lg) !important;
+  color: var(--sc-fg) !important;
+}
+
+.MuiDialog-paper .MuiTypography-root,
+.MuiDialog-paper .MuiListItemText-root {
+  color: var(--sc-fg) !important;
+}
+
+.MuiDialog-paper .MuiListItemText-secondary {
+  color: var(--sc-fg-2) !important;
+}
+
+.MuiDialog-paper .MuiButton-root {
+  text-transform: none !important;
+  border-radius: var(--sc-radius) !important;
+  font-family: var(--sc-font) !important;
+  font-weight: 500 !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary {
+  background-color: var(--sc-primary) !important;
+  color: var(--sc-on-primary) !important;
+}
+
+.MuiDialog-paper .MuiButton-containedPrimary:hover {
+  background-color: var(--sc-primary-hover) !important;
+}
+
+.MuiDialog-paper .MuiButton-text {
+  color: var(--sc-fg-2) !important;
+}
+
+/* 15.13 焦点 / TV 遥控器模式 */
+.featured-content .show-focus:focus,
+.featured-content.is-tv-focused .backdrop-container {
+  outline: 2px solid var(--sc-ring) !important;
+  outline-offset: -2px;
+}
+
+.featured-content.is-focused .backdrop-container {
+  transition: transform var(--sc-dur) var(--sc-ease);
+}
+
+.featured-content.is-videoplayer .backdrop {
+  filter: brightness(0.85);
+}
+
+/* 15.14 移动端适配 */
+@media only screen and (max-width: 767px) {
+  .plot {
+    font-size: 13px !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .age-rating {
+    font-size: 10px !important;
+  }
+}
+
+@media only screen and (max-width: 767px) and (orientation: portrait) {
+  .backdrop,
+  .backdrop.with-video {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  .gradient-overlay {
+    background: transparent !important;
+  }
+
+  .dot.active {
+    transform: scale(1.6) !important;
+  }
+}
+
+/* 15.15 头图圆角矩形框（一套规则适配所有设备）----
+   --------------------------------------------------------------
+   1) #slides-container 绝对定位，所有尺寸顶边都在 y=0；
+   2) 宽度 = 视口宽 − 2×侧边距（0.5cm），水平居中；
+   3) 高度 = 55vh；
+   4) 下方板块（.homeSectionsContainer）跟随卡片底部；
+   5) 头图内部完全使用插件原版布局。
+   -------------------------------------------------------------- */
+#slides-container {
+  position: absolute !important;
+  top: calc(11.25em + var(--sc-hero-margin, 16px)) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: calc(100vw - 2 * var(--sc-hero-side-margin, 0.5cm)) !important;
+  height: 55vh !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: var(--sc-hero-radius, 16px) !important;
+  box-shadow: inset 0 0 0 1px var(--sc-border) !important;
+  z-index: 5 !important;
+}
+
+@media (min-width: 75em) {
+  #slides-container {
+    top: calc(7em + var(--sc-hero-margin, 16px)) !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  #slides-container {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--sc-hero-margin, 16px) + 0.5cm) !important;
+    border-radius: var(--sc-hero-radius, 16px) !important;
+  }
+
+  #slides-container .logo-container {
+    position: absolute !important;
+    top: auto !important;
+    bottom: 13em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(62% + 1cm) !important;
+    height: calc(18% + 1cm) !important;
+  }
+
+  #slides-container .info-container {
+    top: auto !important;
+    bottom: 9.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    justify-content: center !important;
+  }
+
+  #slides-container .runTime {
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+  }
+
+  #slides-container .genre {
+    top: auto !important;
+    bottom: 7.3em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .plot-container {
+    display: none !important;
+  }
+
+  #slides-container .button-container {
+    top: auto !important;
+    bottom: 1.5em !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #slides-container .dots-container {
+    top: auto !important;
+    bottom: calc(3.8em + 1cm) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* 板块跟随卡片底部 */
+#indexPage .homeSectionsContainer {
+  top: calc(11.25em + var(--sc-hero-margin, 16px) + 55vh + var(--sc-hero-bottom-margin, -1.5cm)) !important;
+}
+
+@media (min-width: 75em) {
+  #indexPage .homeSectionsContainer {
+    top: calc(7em + var(--sc-hero-margin, 16px) + 55vh + var(--sc-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  #indexPage .homeSectionsContainer {
+    top: calc(env(safe-area-inset-top, 0px) + 6em + var(--sc-hero-margin, 16px) + 0.5cm + 55vh + var(--sc-hero-bottom-margin, -1.5cm)) !important;
+  }
+}
+
+#indexPage .homeSectionsContainer > .verticalSection:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitleContainer-cards,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle,
+#indexPage .homeSectionsContainer > .verticalSection:first-child .sectionTitle-cards {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* 头图内部布局：不使用任何覆写，完全采用插件原版设置 */
+
+/* 头图不做底部过渡虚化（不叠加 mask） */
+#slides-container .backdrop-container {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+#slides-container .backdrop {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* 视频模式：头图收窄为右侧 40% 并平滑淡出 */
+#slides-container .backdrop.with-video {
+  width: 40% !important;
+  mask-image: linear-gradient(
+    to right,
+    rgba(11, 17, 32, 1) 50%,
+    rgba(11, 17, 32, 0) 92%
+  ) !important;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(11, 17, 32, 1) 50%,
+    rgba(11, 17, 32, 0) 92%
+  ) !important;
+}
+
+#slides-container .backdrop-overlay,
+#slides-container .gradient-overlay {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+/* ==========================================================================
+   16. jellyfin-danmaku 弹幕插件
+   --------------------------------------------------------------------------
+   不做任何适配：完全使用插件自身默认 UI（默认层级、默认配色、默认布局）。
+   本主题不写入任何与该插件相关的 CSS 规则。
+   ========================================================================== */
+
+/* ==========================================================================
+   17. 登录页 / 启动页
+   ========================================================================== */
+.splashLogo {
+  filter: none !important;
+}
+
+.loginForm {
+  background: var(--sc-overlay) !important;
+  border: 1px solid var(--sc-border);
+  border-radius: var(--sc-radius-lg) !important;
+  box-shadow: var(--sc-shadow-lg);
+}
+
+.loginForm h1 {
+  color: var(--sc-fg) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   18. 杂项 / 通用
+   ========================================================================== */
+h1, h2, h3, h4 {
+  color: var(--sc-fg);
+  font-family: var(--sc-font);
+  letter-spacing: -0.01em;
+}
+
+/* 原生文字兜底（shadcn 黑白灰） */
+.itemName,
+.itemName h1,
+.itemName h2,
+.itemName h3,
+.detailPagePrimaryContainer,
+.detailPagePrimaryContainer h1,
+.detailPagePrimaryContainer h2,
+.detailPagePrimaryContainer h3,
+.itemDetailPage,
+.paperList,
+.paperList .listItem,
+.paperList .listItemBody,
+.mediaInfoItem,
+.mediaInfoContent,
+.mediaInfoHeader,
+.metadataDetails,
+.emby-scroller .cardText,
+.inputLabel,
+.selectLabel,
+.checkboxLabel,
+.radioLabel,
+.formLabel,
+.buttonLink,
+.text,
+.muted,
+.formDialogFooter .formDialogFooterItem {
+  color: var(--sc-fg) !important;
+}
+
+.itemName .secondaryText,
+.detailPageSecondaryContainer,
+.mediaInfoItem .mediaInfoText,
+.paperList .listItemBody .text,
+.emby-scroller .cardText-secondary,
+.formDialogFooter .formDialogFooterItem .detail,
+.labelText,
+.text-secondary,
+.secondaryText,
+.itemSecondaryText,
+.mediaInfoText,
+.overview,
+.itemOverview {
+  color: var(--sc-fg-2) !important;
+}
+
+.detailSection,
+.detailSection .sectionTitle,
+.attributes,
+.itemTags {
+  color: var(--sc-fg) !important;
+}
+
+/* 季/集列表文字（黑白灰） */
+.listItemBodyText,
+.listItemBody .listItemBodyText {
+  color: var(--sc-fg) !important;
+  font-weight: 500 !important;
+}
+
+.listItemMediaInfo,
+.listItemMediaInfo .mediaInfoItem,
+.mediaInfoItem .endsAt,
+.mediaInfoItem .starRatingContainer,
+.listItem .listItemMediaInfo {
+  color: var(--sc-fg-2) !important;
+}
+
+.listItem-overview,
+.listItem-bottomoverview,
+.listItemBody .secondary,
+.listItem .secondary,
+.detailSectionContent .secondary {
+  color: var(--sc-fg-2) !important;
+}
+
+.starRatingContainer .starIcon,
+.mediaInfoItem .starIcon,
+.listItem .starIcon {
+  color: var(--sc-fg-3) !important;
+}
+
+.tagline,
+.detailSection .tagline {
+  color: var(--sc-fg-2) !important;
+}
+
+.detailsGroupItem .label,
+.genresLabel,
+.directorsLabel,
+.writersLabel,
+.studiosLabel,
+.itemDetailsGroup .label {
+  color: var(--sc-fg-2) !important;
+  font-weight: 500 !important;
+}
+
+.detailsGroupItem .content,
+.itemDetailsGroup .content {
+  color: var(--sc-fg) !important;
+}
+
+.detailSectionContent .overview,
+.detail-clamp-text {
+  color: var(--sc-fg-2) !important;
+  line-height: 1.7 !important;
+}
+
+/* 影评块 */
+.criticReview {
+  background: var(--sc-surface) !important;
+  border: 1px solid var(--sc-border) !important;
+  border-radius: var(--sc-radius) !important;
+  color: var(--sc-fg) !important;
+}
+
+.criticReview .reviewerName,
+.criticReview .reviewDate {
+  color: var(--sc-fg-2) !important;
+}
+
+/* 详情页标题信息条：仅背景色 + 文字颜色（布局保持 Jellyfin 默认） */
+.detailRibbon {
+  background-color: rgba(255, 255, 255, 0.82) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .detailRibbon {
+    background-color: rgba(16, 17, 21, 0.9) !important;
+  }
+}
+
+.detailRibbon .itemName,
+.detailRibbon .parentName,
+.detailRibbon .originalTitle,
+.detailRibbon .subtitle,
+.detailRibbon .infoText {
+  color: var(--sc-fg) !important;
+}
+
+.detailRibbon .itemMiscInfo,
+.detailRibbon .mediaInfoItem,
+.detailRibbon .mediaInfoText,
+.detailRibbon .starRatingContainer {
+  color: var(--sc-fg-2) !important;
+}
+
+.fieldDescription,
+.loginDisclaimer {
+  color: var(--sc-fg-3) !important;
+}
+
+.text-warning,
+.emby-warning {
+  color: var(--sc-danger) !important;
+}
+
+.emptyState {
+  color: var(--sc-fg-2) !important;
+}
+
+.loadingSpinner {
+  border-color: var(--sc-progress) !important;
+  border-top-color: transparent !important;
+}
+
+/* 电视布局 */
+.layout-tv .navMenuOption {
+  border-radius: var(--sc-radius) !important;
+}
+
+.layout-tv .cardOverlayFab {
+  border-radius: 50% !important;
+}
+
+/* 尊重系统"减弱动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   19. 收尾
+   ========================================================================== */
+.backgroundContainer .cardPadder,
+.backgroundContainer .defaultCardBackground {
+  background-color: var(--sc-surface-2) !important;
+}
