@@ -482,6 +482,128 @@ img {
   border-radius: var(--radius-lg);
 }
 
+/* ==========================================================================
+   18. 视频播放界面动效（参考 shadcn/ui）
+   --------------------------------------------------------------------------
+   只作用于播放器 OSD（.videoOsdBottom / .osdControls / .osdHeader 等）：
+   - 控制按钮 hover：圆形放大 + 浅色底过渡
+   - 播放/暂停大按钮：hover 放大、active 回弹
+   - 进度条：hover 变高（轨道 + 圆点）
+   - 音量条：hover 展开
+   - 标题/信息区：渐入渐出
+   - 控制栏出现：淡入上滑
+   ========================================================================== */
+
+/* ---- 18.1 动效令牌 ---- */
+:root {
+  --osd-dur: 150ms;
+  --osd-dur-2: 200ms;
+  --osd-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- 18.2 控制按钮 hover（圆形放大 + 底色过渡） ---- */
+.osdControls .paper-icon-button-light,
+.videoOsdBottom .paper-icon-button-light {
+  transition: background var(--osd-dur) var(--osd-ease), color var(--osd-dur) var(--osd-ease),
+    transform var(--osd-dur) var(--osd-ease) !important;
+}
+
+.osdControls .paper-icon-button-light:hover,
+.videoOsdBottom .paper-icon-button-light:hover {
+  transform: scale(1.15);
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.osdControls .paper-icon-button-light:active,
+.videoOsdBottom .paper-icon-button-light:active {
+  transform: scale(0.92);
+}
+
+/* ---- 18.3 播放/暂停大按钮（hover 放大、active 回弹） ---- */
+.videoOsdBottom .btnPause,
+.videoOsdBottom .playPauseButton,
+.videoOsdBottom .btnPlay {
+  transition: transform var(--osd-dur-2) var(--osd-ease), background var(--osd-dur) var(--osd-ease),
+    box-shadow var(--osd-dur) var(--osd-ease) !important;
+}
+
+.videoOsdBottom .btnPause:hover,
+.videoOsdBottom .playPauseButton:hover,
+.videoOsdBottom .btnPlay:hover {
+  transform: scale(1.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.videoOsdBottom .btnPause:active,
+.videoOsdBottom .playPauseButton:active,
+.videoOsdBottom .btnPlay:active {
+  transform: scale(0.95);
+}
+
+/* ---- 18.4 进度条 hover（变高） ---- */
+.mdl-slider-background-flex,
+.mdl-slider-background-lower,
+.mdl-slider-background-upper {
+  transition: height var(--osd-dur-2) var(--osd-ease) !important;
+}
+
+.mdl-slider::-webkit-slider-thumb,
+.mdl-slider::-moz-range-thumb {
+  transition: transform var(--osd-dur) var(--osd-ease), background var(--osd-dur) var(--osd-ease) !important;
+}
+
+/* 悬停进度条：轨道变高 + 圆点放大 */
+.osdPositionSlider:hover ~ .mdl-slider-background-flex-container .mdl-slider-background-flex,
+.sliderContainer:hover .mdl-slider-background-flex,
+.videoOsdBottom .sliderContainer:hover .mdl-slider-background-lower {
+  height: 0.4em !important;
+}
+
+.sliderContainer:hover .mdl-slider::-webkit-slider-thumb,
+.videoOsdBottom .sliderContainer:hover .mdl-slider::-webkit-slider-thumb {
+  transform: scale(1.4);
+}
+
+/* ---- 18.5 音量条 hover（展开） ---- */
+.osdVolumeSliderContainer {
+  transition: width var(--osd-dur-2) var(--osd-ease), opacity var(--osd-dur) var(--osd-ease) !important;
+}
+
+.osdVolumeSliderContainer:hover {
+  width: 12em !important;
+}
+
+/* ---- 18.6 标题/信息区渐入 ---- */
+.osdTitle,
+.osdTextContainer,
+.videoOsdBottom .osdMediaStatus {
+  transition: opacity var(--osd-dur-2) var(--osd-ease) !important;
+}
+
+/* ---- 18.7 控制栏出现：淡入上滑（shadcn fade-up） ---- */
+.videoOsdBottom,
+.skinHeader-withBackground.osdHeader {
+  animation: osd-fade-up var(--osd-dur-2) var(--osd-ease);
+}
+
+@keyframes osd-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- 18.8 键盘焦点（shadcn ring 光环，深色背景用白 ring） ---- */
+.videoOsdBottom :focus-visible,
+.osdControls :focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px #fff !important;
+}
+
 /* 尊重系统"减弱动态效果"设置 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
