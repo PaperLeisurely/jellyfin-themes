@@ -2009,16 +2009,6 @@ h1, h2, h3, h4 {
   background-color: rgba(15, 23, 42, 0.35) !important;
 }
 
-/* 进度环（spinner） */
-.progressring-spiner {
-  border-color: var(--sc-primary) !important;
-  border-width: 0.3em !important;
-}
-
-.progressring-bg {
-  border-color: var(--sc-border) !important;
-}
-
 /* ---- 剧集列表补充 ---- */
 .listItem-border {
   border-color: var(--sc-border) !important;
@@ -2057,20 +2047,6 @@ h1, h2, h3, h4 {
 
 .playstatebutton-icon-unplayed {
   color: var(--sc-fg-3) !important;
-}
-
-/* ---- 开关控件（mdl-switch，shadcn 风格） ---- */
-.mdl-switch__track {
-  background: var(--sc-border-strong) !important;
-}
-
-.mdl-switch__input:checked + .mdl-switch__label + .mdl-switch__trackContainer > .mdl-switch__track {
-  background: rgba(15, 23, 42, 0.6) !important;
-}
-
-.mdl-switch__thumb {
-  background: var(--sc-fg) !important;
-  box-shadow: var(--sc-shadow-sm) !important;
 }
 
 /* ---- 章节预览（播放器进度条悬停缩略图） ---- */
@@ -2144,11 +2120,6 @@ div[data-role="controlgroup"] a[data-role="button"] {
   margin: 0 !important;
 }
 
-/* ---- 评分星标（黑白：中性白/灰） ---- */
-.starIcon {
-  color: var(--sc-fg-3) !important;
-}
-
 /* ---- 详情页补充 ---- */
 .detailPagePrimaryContent {
   max-width: 66em;
@@ -2192,12 +2163,6 @@ div[data-role="controlgroup"] a[data-role="button"] {
   border-bottom: 1px solid var(--sc-border) !important;
 }
 
-.infoBanner {
-  background: var(--sc-secondary) !important;
-  color: var(--sc-fg) !important;
-  border-radius: var(--sc-radius) !important;
-}
-
 .sessionCardFooter {
   border: 1px solid var(--sc-border) !important;
   border-radius: var(--sc-radius) !important;
@@ -2209,28 +2174,6 @@ div[data-role="controlgroup"] a[data-role="button"] {
   color: var(--sc-fg) !important;
 }
 
-/* 任务进度（后台任务） */
-.taskProgressOuter {
-  background: var(--sc-border) !important;
-  border-radius: 2px !important;
-}
-
-.taskProgressInner {
-  background: var(--sc-progress) !important;
-  border-radius: 2px !important;
-}
-
-/* ---- 正在播放页 / 播放列表 ---- */
-.nowPlayingPageImage {
-  border: none !important;
-}
-
-.nowPlayingContextMenu {
-  background: var(--sc-surface) !important;
-  border: 1px solid var(--sc-border) !important;
-  border-radius: var(--sc-radius) !important;
-}
-
 /* ---- 其他控件 ---- */
 .emby-checkbox,
 .selectArrow {
@@ -2239,18 +2182,6 @@ div[data-role="controlgroup"] a[data-role="button"] {
 
 .emby-select-withcolor {
   background-color: var(--sc-input) !important;
-}
-
-.inputLabelFocused,
-.selectLabelFocused,
-.textareaLabelFocused {
-  color: var(--sc-primary) !important;
-}
-
-.inputLabelUnfocused,
-.selectLabelUnfocused,
-.textareaLabelUnfocused {
-  color: var(--sc-fg-3) !important;
 }
 
 fieldset {
