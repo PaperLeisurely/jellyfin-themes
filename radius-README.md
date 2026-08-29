@@ -1,9 +1,17 @@
-# Jellyfin · shadcn/ui 圆角标准主题
+# Jellyfin · shadcn/ui 圆角标准主题 + B站字体
 
-参考 [shadcn/ui](https://github.com/shadcn-ui/ui) 的圆角规范，为 Jellyfin 10.11.x **所有界面**添加统一圆角。
+参考 [shadcn/ui](https://github.com/shadcn-ui/ui) 的圆角规范，为 Jellyfin 10.11.x **所有界面**添加统一圆角；并全局应用 **B站（bilibili）网页版字体**。
 
-**本主题只做圆角**——不改颜色、不动布局、不加动效、不写任何插件避让规则。
+**本主题只做圆角 + 字体**——不改颜色、不动布局、不加动效、不写任何插件避让规则。
 适合叠加在任何 Jellyfin 主题之上（把它放在 Custom CSS 的最前面即可）。
+
+## B站字体
+
+全局字体栈（与 bilibili 网页版一致）：
+```
+"PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", 系统回退
+```
+应用于所有界面文字（标题/正文/按钮/输入框/列表/弹窗等）。
 
 ## 安装
 
