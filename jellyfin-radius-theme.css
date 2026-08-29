@@ -1,9 +1,11 @@
 /* ==========================================================================
    Jellyfin · shadcn/ui 圆角标准主题
    --------------------------------------------------------------------------
-   本主题只做一件事：参考 shadcn/ui（https://github.com/shadcn-ui/ui）
-   的圆角标准，为 Jellyfin 10.11.x 所有界面元素添加统一圆角。
-   - 不改任何颜色 / 布局 / 动效（保持 Jellyfin 默认）
+   本主题参考 shadcn/ui（https://github.com/shadcn-ui/ui）规范：
+   第一步：为 Jellyfin 10.11.x 所有界面元素添加统一圆角
+   第二步：添加 shadcn 风格动效（150-200ms 过渡 / hover 反馈 /
+           focus ring 光环 / 弹窗 fade+zoom）
+   - 不改任何颜色 / 布局（保持 Jellyfin 默认）
    - 不写 Media Bar / 弹幕插件等避让规则
    - 深浅色模式通用（圆角与颜色无关，自动适配任何主题）
    --------------------------------------------------------------------------
@@ -446,6 +448,205 @@ img {
 /* 空状态消息 */
 .centerMessage {
   border-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   18. 动效（shadcn/ui 风格）
+   --------------------------------------------------------------------------
+   - 统一过渡：150-200ms + shadcn 缓动曲线 cubic-bezier(0.4, 0, 0.2, 1)
+   - 卡片 hover：阴影提升 + 轻微上浮 + 图片微缩放
+   - 按钮 / 图标 / 列表项 hover：背景过渡
+   - 输入框 focus：ring 光环
+   - 弹窗：fade + zoom 缩放淡入
+   - 滚动箭头 / 导航项：平滑反馈
+   ========================================================================== */
+
+/* ---- 18.1 动效令牌 ---- */
+:root {
+  --dur: 150ms;
+  --dur-2: 200ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- 18.2 卡片 hover（阴影提升 + 上浮 + 图片缩放） ---- */
+.cardScalable {
+  transition: box-shadow var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+
+.cardImageContainer,
+.cardImage {
+  transition: transform var(--dur-2) var(--ease), filter var(--dur) var(--ease);
+}
+
+.cardBox {
+  transition: transform var(--dur-2) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .card:hover .cardBox {
+    transform: translateY(-2px);
+  }
+
+  .card:hover .cardImage,
+  .card:hover .cardImageContainer {
+    transform: scale(1.04);
+    filter: brightness(1.02);
+  }
+
+  .card:active .cardScalable,
+  .card:active .cardBox {
+    transform: translateY(0);
+  }
+}
+
+/* ---- 18.3 按钮 hover / active ---- */
+.emby-button,
+.paper-icon-button-light,
+.btn-primary,
+.button-submit,
+.btnSubmit,
+.cardOverlayFab,
+.textActionButton,
+.button-flat,
+.button-link {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.emby-button.raised:hover,
+.btn-primary:hover,
+.button-submit:hover,
+.btnSubmit:hover {
+  transform: translateY(-1px);
+}
+
+.emby-button.raised:active,
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.cardOverlayFab:hover {
+  transform: scale(1.08);
+}
+
+.cardOverlayFab:active {
+  transform: scale(0.92);
+}
+
+/* ---- 18.4 列表项 hover ---- */
+.listItem {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* ---- 18.5 导航项 hover / 选中 ---- */
+.navMenuOption {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* ---- 18.6 输入框 focus ring（shadcn 光环） ---- */
+.emby-input,
+.emby-textarea,
+.inputContainer input,
+.emby-select {
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.inputContainer input:focus,
+.emby-select:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(15, 23, 42, 0.8);
+}
+
+/* MUI 输入框 focus ring */
+.MuiOutlinedInput-root {
+  transition: box-shadow var(--dur) var(--ease);
+}
+
+.MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(15, 23, 42, 0.8);
+}
+
+/* ---- 18.7 弹窗 fade + zoom（shadcn dialog 动效） ---- */
+.dialog.animated-dialog {
+  animation: sc-dialog-in var(--dur-2) var(--ease);
+}
+
+@keyframes sc-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* MUI 弹窗 */
+.MuiDialog-paper {
+  animation: sc-dialog-in var(--dur-2) var(--ease);
+}
+
+/* ---- 18.8 下拉菜单 fade ---- */
+.paper-list-container,
+.MuiMenu-paper {
+  animation: sc-fade-in var(--dur) var(--ease);
+}
+
+@keyframes sc-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---- 18.9 滚动箭头 hover ---- */
+.emby-scrollbuttons-button {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.emby-scrollbuttons-button:hover {
+  transform: scale(1.1);
+}
+
+.emby-scrollbuttons-button:active {
+  transform: scale(0.95);
+}
+
+/* ---- 18.10 顶栏按钮 / 图标按钮 hover ---- */
+.skinHeader .headerButton,
+.skinHeader .emby-button {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* ---- 18.11 正在播放栏按钮 ---- */
+.nowPlayingBar .mediaButton,
+.nowPlayingBar .playPauseButton {
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.nowPlayingBar .playPauseButton:hover {
+  transform: scale(1.05);
+}
+
+/* ---- 18.12 图片加载淡入 ---- */
+.backdropImageFadeIn {
+  animation: sc-fade-in 800ms ease-in normal both;
+}
+
+/* ---- 18.13 键盘焦点环（shadcn focus ring） ---- */
+.show-focus:focus,
+:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(15, 23, 42, 0.8);
 }
 
 /* 尊重系统"减弱动态效果"设置 */
